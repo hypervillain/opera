@@ -1,0 +1,225 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5488638767724190908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: ../FmodOpera/Build/Desktop/Master.strings.bank
+  Name: Master.strings
+  StudioPath: bank:/Master.strings
+  lastModified: 638385177454926872
+  FileSizes:
+  - Name: Desktop
+    Value: 1134
+  Exists: 1
+--- !u!114 &-4525452364340005895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: ../FmodOpera/Build/Desktop/Master.bank
+  Name: Master
+  StudioPath: bank:/Master
+  lastModified: 638385177454908474
+  FileSizes:
+  - Name: Desktop
+    Value: 3312
+  Exists: 1
+--- !u!114 &-410082698760352880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/GameStatus
+  m_EditorClassIdentifier: 
+  Path: event:/GameStatus
+  Guid:
+    Data1: 1366496985
+    Data2: 1227917700
+    Data3: 1818314899
+    Data4: 858010849
+  Banks:
+  - {fileID: -4525452364340005895}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters:
+  - {fileID: 2691897759221315081}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-345817518028863459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Act1Ambiance
+  m_EditorClassIdentifier: 
+  Path: event:/Act1Ambiance
+  Guid:
+    Data1: 2116665373
+    Data2: 1162396130
+    Data3: -536990056
+    Data4: -195424057
+  Banks:
+  - {fileID: 4839264537187356201}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 45816
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32cf7c32a3ed8347bac48ef5ed56d82, type: 3}
+  m_Name: FMODStudioCache
+  m_EditorClassIdentifier: 
+  EditorBanks:
+  - {fileID: -5488638767724190908}
+  - {fileID: 4839264537187356201}
+  - {fileID: -4525452364340005895}
+  EditorEvents:
+  - {fileID: 2528397869509193884}
+  - {fileID: -345817518028863459}
+  - {fileID: 1894598740839284510}
+  - {fileID: -410082698760352880}
+  EditorParameters: []
+  MasterBanks:
+  - {fileID: -4525452364340005895}
+  StringsBanks:
+  - {fileID: -5488638767724190908}
+  cacheTime: 638385202850482984
+  cacheVersion: 131609
+--- !u!114 &1894598740839284510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/GamePause
+  m_EditorClassIdentifier: 
+  Path: snapshot:/GamePause
+  Guid:
+    Data1: 688958840
+    Data2: 1339475649
+    Data3: -2071710582
+    Data4: 2074237360
+  Banks:
+  - {fileID: -4525452364340005895}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
+--- !u!114 &2528397869509193884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Act1
+  m_EditorClassIdentifier: 
+  Path: event:/Act1
+  Guid:
+    Data1: -870460356
+    Data2: 1160529535
+    Data3: -1208781137
+    Data4: 843314390
+  Banks:
+  - {fileID: 4839264537187356201}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 66792
+--- !u!114 &2691897759221315081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/GameStatus/GamePause
+  m_EditorClassIdentifier: 
+  Name: GamePause
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 1
+  ID:
+    data1: 3780407208
+    data2: 879849345
+  Type: 2
+  IsGlobal: 0
+  Labels:
+  - Paused
+  - Running
+  Exists: 1
+--- !u!114 &4839264537187356201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Act1.bank
+  m_EditorClassIdentifier: 
+  Path: ../FmodOpera/Build/Desktop/Act1.bank
+  Name: Act1
+  StudioPath: bank:/Act1
+  lastModified: 638385202850482984
+  FileSizes:
+  - Name: Desktop
+    Value: 1415968
+  Exists: 1
