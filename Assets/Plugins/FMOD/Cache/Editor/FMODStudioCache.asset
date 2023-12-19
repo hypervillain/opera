@@ -15,7 +15,7 @@ MonoBehaviour:
   Path: ../FmodOpera/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638385177454926872
+  lastModified: 638385263196633377
   FileSizes:
   - Name: Desktop
     Value: 1134
@@ -35,7 +35,7 @@ MonoBehaviour:
   Path: ../FmodOpera/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638385177454908474
+  lastModified: 638385263196605342
   FileSizes:
   - Name: Desktop
     Value: 3312
@@ -121,7 +121,7 @@ MonoBehaviour:
   - {fileID: -4525452364340005895}
   StringsBanks:
   - {fileID: -5488638767724190908}
-  cacheTime: 638385202850482984
+  cacheTime: 638385263196633377
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -218,8 +218,8 @@ MonoBehaviour:
   Path: ../FmodOpera/Build/Desktop/Act1.bank
   Name: Act1
   StudioPath: bank:/Act1
-  lastModified: 638385202850482984
+  lastModified: 638385263196417591
   FileSizes:
   - Name: Desktop
-    Value: 1415968
+    Value: 1833184
   Exists: 1

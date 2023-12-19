@@ -34,7 +34,7 @@ public class CentralAudioSource : MonoBehaviour
     {
         if (type == EVENT_CALLBACK_TYPE.TIMELINE_BEAT)
         {
-            var beatParams = (FMOD.Studio.TIMELINE_BEAT_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(FMOD.Studio.TIMELINE_BEAT_PROPERTIES));
+            var beatParams = (TIMELINE_BEAT_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(FMOD.Studio.TIMELINE_BEAT_PROPERTIES));
             int currentBeat = beatParams.beat;
             int currentMeasure = beatParams.bar;
 
