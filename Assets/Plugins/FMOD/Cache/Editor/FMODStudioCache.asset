@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5488638767724190908
+--- !u!114 &-9093755409818949270
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,35 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
-  m_Name: bank:/Master.strings.bank
+  m_Name: bank:/Act1.bank
   m_EditorClassIdentifier: 
-  Path: ../FmodOpera/Build/Desktop/Master.strings.bank
-  Name: Master.strings
-  StudioPath: bank:/Master.strings
-  lastModified: 638385263196633377
+  Path: Studio/Build/Desktop/Act1.bank
+  Name: Act1
+  StudioPath: bank:/Act1
+  lastModified: 638386851515071706
   FileSizes:
   - Name: Desktop
-    Value: 1134
-  Exists: 1
---- !u!114 &-4525452364340005895
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
-  m_Name: bank:/Master.bank
-  m_EditorClassIdentifier: 
-  Path: ../FmodOpera/Build/Desktop/Master.bank
-  Name: Master
-  StudioPath: bank:/Master
-  lastModified: 638385263196605342
-  FileSizes:
-  - Name: Desktop
-    Value: 3312
+    Value: 1419360
   Exists: 1
 --- !u!114 &-410082698760352880
 MonoBehaviour:
@@ -59,7 +39,7 @@ MonoBehaviour:
     Data3: 1818314899
     Data4: 858010849
   Banks:
-  - {fileID: -4525452364340005895}
+  - {fileID: 5333753848374407281}
   IsStream: 0
   Is3D: 0
   IsOneShot: 0
@@ -87,7 +67,7 @@ MonoBehaviour:
     Data3: -536990056
     Data4: -195424057
   Banks:
-  - {fileID: 4839264537187356201}
+  - {fileID: -9093755409818949270}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
@@ -108,9 +88,9 @@ MonoBehaviour:
   m_Name: FMODStudioCache
   m_EditorClassIdentifier: 
   EditorBanks:
-  - {fileID: -5488638767724190908}
-  - {fileID: 4839264537187356201}
-  - {fileID: -4525452364340005895}
+  - {fileID: 5430095068315186920}
+  - {fileID: -9093755409818949270}
+  - {fileID: 5333753848374407281}
   EditorEvents:
   - {fileID: 2528397869509193884}
   - {fileID: -345817518028863459}
@@ -118,10 +98,10 @@ MonoBehaviour:
   - {fileID: -410082698760352880}
   EditorParameters: []
   MasterBanks:
-  - {fileID: -4525452364340005895}
+  - {fileID: 5333753848374407281}
   StringsBanks:
-  - {fileID: -5488638767724190908}
-  cacheTime: 638386282487127034
+  - {fileID: 5430095068315186920}
+  cacheTime: 638386851515873717
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -142,7 +122,7 @@ MonoBehaviour:
     Data3: -2071710582
     Data4: 2074237360
   Banks:
-  - {fileID: -4525452364340005895}
+  - {fileID: 5333753848374407281}
   IsStream: 0
   Is3D: 0
   IsOneShot: 0
@@ -169,7 +149,7 @@ MonoBehaviour:
     Data3: -1208781137
     Data4: 843314390
   Banks:
-  - {fileID: 4839264537187356201}
+  - {fileID: -9093755409818949270}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
@@ -203,7 +183,7 @@ MonoBehaviour:
   - Paused
   - Running
   Exists: 1
---- !u!114 &4839264537187356201
+--- !u!114 &5333753848374407281
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -213,13 +193,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
-  m_Name: bank:/Act1.bank
+  m_Name: bank:/Master.bank
   m_EditorClassIdentifier: 
-  Path: ../FmodOpera/Build/Desktop/Act1.bank
-  Name: Act1
-  StudioPath: bank:/Act1
-  lastModified: 638386282487127034
+  Path: Studio/Build/Desktop/Master.bank
+  Name: Master
+  StudioPath: bank:/Master
+  lastModified: 638386851515860407
   FileSizes:
   - Name: Desktop
-    Value: 1419360
+    Value: 3312
+  Exists: 1
+--- !u!114 &5430095068315186920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: Studio/Build/Desktop/Master.strings.bank
+  Name: Master.strings
+  StudioPath: bank:/Master.strings
+  lastModified: 638386851515873717
+  FileSizes:
+  - Name: Desktop
+    Value: 1134
   Exists: 1
