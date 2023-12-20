@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{b2a1f324-e472-4aa5-ab0b-7d3c380fcc9d}">
+		<property name="assetPath">
+			<value>Beat lofi 115.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>66.792604166666663</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2430183b-6dde-48d5-818c-a3e5a7da97eb}</destination>
+		</relationship>
+	</object>
+</objects>

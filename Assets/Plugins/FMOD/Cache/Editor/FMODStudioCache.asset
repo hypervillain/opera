@@ -94,7 +94,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 45816
+  Length: 45000
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   - {fileID: -4525452364340005895}
   StringsBanks:
   - {fileID: -5488638767724190908}
-  cacheTime: 638385263196633377
+  cacheTime: 638386282487127034
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -218,8 +218,8 @@ MonoBehaviour:
   Path: ../FmodOpera/Build/Desktop/Act1.bank
   Name: Act1
   StudioPath: bank:/Act1
-  lastModified: 638385263196417591
+  lastModified: 638386282487127034
   FileSizes:
   - Name: Desktop
-    Value: 1833184
+    Value: 1419360
   Exists: 1

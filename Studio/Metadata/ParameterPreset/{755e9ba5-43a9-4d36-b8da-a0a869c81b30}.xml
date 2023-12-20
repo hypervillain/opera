@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{755e9ba5-43a9-4d36-b8da-a0a869c81b30}">
+		<property name="name">
+			<value>GamePause</value>
+		</property>
+		<relationship name="folder">
+			<destination>{52b186c8-24c6-4b6d-a80f-5d382b05449b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{eb420550-0000-418c-9b73-ee755e2c8cb9}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{eb420550-0000-418c-9b73-ee755e2c8cb9}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Paused</value>
+			<value>Running</value>
+		</property>
+		<property name="initialValue">
+			<value>1</value>
+		</property>
+	</object>
+</objects>

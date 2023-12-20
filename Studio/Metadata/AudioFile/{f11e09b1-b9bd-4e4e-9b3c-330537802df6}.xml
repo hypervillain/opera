@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{f11e09b1-b9bd-4e4e-9b3c-330537802df6}">
+		<property name="assetPath">
+			<value>Recording_Female LoFi_KITS.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>16.776</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2430183b-6dde-48d5-818c-a3e5a7da97eb}</destination>
+		</relationship>
+	</object>
+</objects>

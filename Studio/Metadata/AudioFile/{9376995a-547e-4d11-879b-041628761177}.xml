@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{9376995a-547e-4d11-879b-041628761177}">
+		<property name="assetPath">
+			<value>Campfire.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>45.816645833333332</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2430183b-6dde-48d5-818c-a3e5a7da97eb}</destination>
+		</relationship>
+	</object>
+</objects>
