@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{3bd46944-59d4-43dc-90bd-0d77e6a4b5ed}">
+		<property name="assetPath">
+			<value>Horns - Funky 1 Saxophone [Cm].wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.6167083333333334</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{2430183b-6dde-48d5-818c-a3e5a7da97eb}</destination>
+		</relationship>
+	</object>
+</objects>
