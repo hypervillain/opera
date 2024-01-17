@@ -4,14 +4,9 @@ using FMODUnity;
 
 using System.Collections;
 
-// Marshall
-using System.Runtime.InteropServices;
 using System;
 
 using System.Linq;
-using Unity.VisualScripting.Dependencies.NCalc;
-using System.Runtime.CompilerServices;
-
 
 public class Note
 {
@@ -22,9 +17,8 @@ public class Note
 
     public float expectedAbsoluteTime;
 
-    public Boolean isPast = false;
-
-    public Boolean isHit = false;
+    public bool isPast = false;
+    public bool isHit = false;
 
     public Note(string value, int measure, int beat, int subdivision)
     {
@@ -54,7 +48,6 @@ public class Note
 
 public class ActManager : MonoBehaviour
 {
-    public Metronome metronome;
     public Restart restart;
     public StudioEventEmitter[] studioEventEmittersToPause;
 
@@ -75,6 +68,13 @@ public class ActManager : MonoBehaviour
 
     private (int measure, int beat, int subdivision, float time) currentBeatInfo;
 
+
+    public void OnPlayPause()
+    {
+        TogglePlayAct();
+    }
+
+    /** END OF PUBLIC METHODS */
     private void CalculateNoteTimeOffsets(int measure, int beat)
     {
         float currentTime = Time.time;
@@ -94,7 +94,6 @@ public class ActManager : MonoBehaviour
         }
     }
 
-
     void Start()
     {
         notes = new Note[9];
@@ -111,7 +110,6 @@ public class ActManager : MonoBehaviour
         CalculateNoteTimeOffsets(1, 1);
 
         CentralAudioSource.OnAudioBeat += OnAudioBeat;
-        Metronome.OnCubeClicked += OnMetronomeClick;
         Restart.OnRestartClicked += OnRestartClick;
 
         pauseSnapshotInstance = RuntimeManager.CreateInstance("snapshot:/GamePause");
@@ -120,7 +118,6 @@ public class ActManager : MonoBehaviour
     void OnDisable()
     {
         CentralAudioSource.OnAudioBeat -= OnAudioBeat;
-        Metronome.OnCubeClicked -= OnMetronomeClick;
     }
 
     private void TogglePlayAct()
@@ -162,18 +159,8 @@ public class ActManager : MonoBehaviour
 
     }
 
-    private void OnMetronomeClick()
-    {
-        TogglePlayAct();
-    }
-
     private void OnAudioBeat(int FMODBeat, int FMODMeasure)
     {
-        if (metronome != null)
-        {
-            metronome.Rotate();
-        }
-
         if (subdivisionCoroutine != null)
         {
             StopCoroutine(subdivisionCoroutine);
@@ -203,16 +190,17 @@ public class ActManager : MonoBehaviour
         }
     }
 
-    private Note FindClosestNote()
+    private (Note closestNote, float timeDistance) FindClosestNote()
     {
         Note closestNote = null;
+        float currentTime = Time.time;
         float smallestTimeDifference = float.MaxValue;
 
         foreach (Note note in notes)
         {
             if (!note.isPast)
             {
-                float timeDifference = Mathf.Abs(note.expectedAbsoluteTime - Time.time);
+                float timeDifference = Mathf.Abs(note.expectedAbsoluteTime - currentTime);
                 if (timeDifference < smallestTimeDifference)
                 {
                     smallestTimeDifference = timeDifference;
@@ -220,21 +208,22 @@ public class ActManager : MonoBehaviour
                 }
             }
         }
-        return closestNote;
+        return (closestNote, smallestTimeDifference);
     }
     private void HandleClickUpdate()
     {
         bool isButtonDown = Input.GetMouseButton(0);
         if (isButtonDown && !isButtonDownAcrossUpdates)
         {
-            Note closestNote = FindClosestNote();
+            (Note closestNote, float timeDistance) = FindClosestNote();
             if (closestNote != null)
             {
-                Debug.Log($"Closest note is {closestNote.value}");
+                Debug.Log($"Closest note is {closestNote.value}, with a difference of {timeDistance}");
+                /** Check if it's actually in range! */
                 closestNote.isPast = true;
                 closestNote.isHit = true;
 
-                /** Handle time difference logic here */
+                /** Handle time difference logic here! */
                 StartCoroutine(ADSRCoroutine(1));
             }
         }
