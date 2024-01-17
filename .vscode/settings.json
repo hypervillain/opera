@@ -53,6 +53,7 @@
     },
     "dotnet.defaultSolution": "opera.sln",
     "cSpell.words": [
+        "ADSR",
         "Behaviour",
         "FMOD"
     ]

@@ -14,6 +14,8 @@ public class ActManager : MonoBehaviour
     public Restart restart;
     public StudioEventEmitter[] studioEventEmittersToPause;
 
+    public InstrumentManager instrumentManager;
+
     private bool PLAY_TOGGLE = true;
 
     private EventInstance pauseSnapshotInstance;
@@ -23,14 +25,21 @@ public class ActManager : MonoBehaviour
     private int lastMeasurePlayed = 0;
     private int measure;
 
-    private IEnumerator SubdivisionRoutine(int subdivisions, float beatDuration, bool fullRotate)
+    private int SUBDIVISIONS = 8;
+
+    private float beatDuration = 60f / 115; // TODO: Infer BPM;
+
+    private bool isButtonDownAcrossUpdates = false;
+
+    private IEnumerator SubdivisionRoutine(int measure, int beat)
     {
-        float subdivisionDuration = beatDuration / subdivisions;
-        for (int i = 0; i < subdivisions; i++)
+        float subdivisionDuration = beatDuration / SUBDIVISIONS;
+        for (int i = 0; i < SUBDIVISIONS; i++)
         {
-            if (fullRotate || i == 4)
+            if (i == 0)
             {
                 metronome.Rotate();
+                // instrumentManager.PlayNote(0);
             }
             yield return new WaitForSeconds(subdivisionDuration);
         }
@@ -52,9 +61,13 @@ public class ActManager : MonoBehaviour
         Metronome.OnCubeClicked -= OnMetronomeClick;
     }
 
+    void Update()
+    {
+        HandleClickUpdate();
+    }
+
     private void TogglePlayAct()
     {
-        // Toggle play status
         PLAY_TOGGLE = !PLAY_TOGGLE;
         if (PLAY_TOGGLE == false)
         {
@@ -101,6 +114,10 @@ public class ActManager : MonoBehaviour
     private void OnAudioBeat(int FMODBeat, int FMODMeasure)
     {
         measure = FMODMeasure;
+        if (lastMeasurePlayed < measure)
+        {
+
+        }
         if (metronome != null)
         {
             metronome.Rotate();
@@ -111,10 +128,55 @@ public class ActManager : MonoBehaviour
             StopCoroutine(subdivisionCoroutine);
         }
 
-        // TODO: Infer BPM from CentralAudioSource instance;
-        float beatDuration = 60f / 115;
-        int subdivisions = 8;
-        subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(subdivisions, beatDuration, lastMeasurePlayed < measure));
+        subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(FMODMeasure, FMODBeat));
         lastMeasurePlayed = measure;
+    }
+
+    private IEnumerator ADSRCoroutine(int direction)
+    {
+        float attackTime = 0.1f;
+        float startTime = Time.time;
+        while (Time.time - startTime < attackTime)
+        {
+            float normalizedTime;
+            if (direction > 0)
+            {
+                normalizedTime = (Time.time - startTime) / attackTime;
+            }
+            else
+            {
+                normalizedTime = 1 - ((Time.time - startTime) / attackTime);
+            }
+            studioEventEmittersToPause[0].EventInstance.setParameterByName("VolumeControl", normalizedTime);
+            yield return null;
+        }
+    }
+
+    public void VolumeUp()
+    {
+        StartCoroutine(ADSRCoroutine(1));
+    }
+
+    public void VolumeDown()
+    {
+        StartCoroutine(ADSRCoroutine(0));
+    }
+
+    private void HandleClickUpdate()
+    {
+        bool isButtonDown = Input.GetMouseButton(0);
+        if (isButtonDown && !isButtonDownAcrossUpdates)
+        {
+            VolumeUp();
+        }
+        if (isButtonDown && isButtonDownAcrossUpdates)
+        {
+            // Debug.Log("Button was already pressed / checked!");
+        }
+        else if (!isButtonDown && isButtonDownAcrossUpdates)
+        {
+            VolumeDown();
+        }
+        isButtonDownAcrossUpdates = isButtonDown;
     }
 }

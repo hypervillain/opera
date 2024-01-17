@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{e5b378cf-ab6b-42c0-af7a-33d2a6336044}">
+		<property name="name">
+			<value>NavigateTrack</value>
+		</property>
+		<relationship name="folder">
+			<destination>{52b186c8-24c6-4b6d-a80f-5d382b05449b}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{37269710-61d2-4448-aec4-c5a50ccb8840}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{37269710-61d2-4448-aec4-c5a50ccb8840}">
+		<property name="minimum">
+			<value>-1</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
