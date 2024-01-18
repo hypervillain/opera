@@ -174,7 +174,7 @@ MonoBehaviour:
   - {fileID: 6869102606325236498}
   StringsBanks:
   - {fileID: -7376072191608544489}
-  cacheTime: 638410975553472958
+  cacheTime: 638411837970611316
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -218,10 +218,10 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Act1.bank
   Name: Act1
   StudioPath: bank:/Act1
-  lastModified: 638410975553413341
+  lastModified: 638411837970611316
   FileSizes:
   - Name: Desktop
-    Value: 823360
+    Value: 1234176
   Exists: 1
 --- !u!114 &2528397869509193884
 MonoBehaviour:
@@ -250,7 +250,7 @@ MonoBehaviour:
   - {fileID: -4857720914934104748}
   MinDistance: 1
   MaxDistance: 20
-  Length: 16714
+  Length: 33391
 --- !u!114 &2757082664467620526
 MonoBehaviour:
   m_ObjectHideFlags: 0

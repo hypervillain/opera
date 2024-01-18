@@ -55,6 +55,7 @@
     "cSpell.words": [
         "ADSR",
         "Behaviour",
-        "FMOD"
+        "FMOD",
+        "Mathf"
     ]
 }

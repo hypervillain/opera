@@ -14,18 +14,20 @@ public class Note
     public int measure;
     public int beat;
     public int subdivision;
+    public int length;
 
     public float expectedAbsoluteTime;
 
     public bool isPast = false;
     public bool isHit = false;
 
-    public Note(string value, int measure, int beat, int subdivision)
+    public Note(string value, int measure, int beat, int subdivision, int length)
     {
         this.value = value;
         this.measure = measure;
         this.beat = beat;
         this.subdivision = subdivision;
+        this.length = length;
     }
 
     public int CountSubdivisions(int SIGNATURE, int SUBDIVISIONS, int measure, int beat, int subdivision)
@@ -60,11 +62,14 @@ public class ActManager : MonoBehaviour
     private int SUBDIVISIONS = 8;
 
     private float beatDuration = 60f / 115; // TODO: query BPM;
+
     private int signature = 4; // TODO: query signature;
 
     private bool isButtonDownAcrossUpdates = false;
 
     private Note[] notes;
+
+    private InstrumentControl instrumentControl;
 
     private (int measure, int beat, int subdivision, float time) currentBeatInfo;
 
@@ -96,16 +101,28 @@ public class ActManager : MonoBehaviour
 
     void Start()
     {
-        notes = new Note[9];
-        notes[0] = new Note("A", 1, 1, 1);
-        notes[1] = new Note("A#", 1, 2, 1);
-        notes[2] = new Note("B", 1, 3, 5);
-        notes[3] = new Note("B#", 1, 3, 5);
-        notes[4] = new Note("C", 1, 3, 5);
-        notes[5] = new Note("C#", 2, 1, 5);
-        notes[6] = new Note("D", 2, 3, 1);
-        notes[7] = new Note("D#", 2, 3, 5);
-        notes[8] = new Note("E", 2, 4, 1);
+        instrumentControl = gameObject.AddComponent<InstrumentControl>();
+        instrumentControl.Initialize(studioEventEmittersToPause[0].EventInstance);
+
+        notes = new Note[18];
+        notes[0] = new Note("A", 1, 1, 1, 8);
+        notes[1] = new Note("A#", 1, 2, 1, 8);
+        notes[2] = new Note("B", 1, 3, 1, 8);
+        notes[3] = new Note("B#", 1, 4, 1, 8);
+        notes[4] = new Note("C", 2, 1, 1, 8);
+        notes[5] = new Note("C#", 2, 2, 1, 8);
+        notes[6] = new Note("D", 2, 3, 1, 8);
+        notes[7] = new Note("D#", 2, 4, 1, 8);
+        notes[8] = new Note("E", 3, 1, 1, 8);
+        notes[9] = new Note("A", 3, 2, 1, 8);
+        notes[10] = new Note("A#", 3, 3, 1, 8);
+        notes[11] = new Note("B", 3, 4, 1, 8);
+        notes[12] = new Note("B#", 4, 1, 1, 8);
+        notes[13] = new Note("C", 4, 2, 1, 8);
+        notes[14] = new Note("C#", 4, 3, 1, 8);
+        notes[15] = new Note("D", 4, 4, 1, 8);
+        notes[16] = new Note("D#", 5, 1, 1, 8);
+        notes[17] = new Note("E", 5, 2, 1, 8);
 
         CalculateNoteTimeOffsets(1, 1);
 
@@ -127,7 +144,6 @@ public class ActManager : MonoBehaviour
         {
             // Trigger FMOD GamePause Snapshot
             pauseSnapshotInstance.start();
-            Debug.Log(studioEventEmittersToPause.Length);
             foreach (var emitter in studioEventEmittersToPause)
             {
                 var instance = emitter.EventInstance;
@@ -190,7 +206,7 @@ public class ActManager : MonoBehaviour
         }
     }
 
-    private (Note closestNote, float timeDistance) FindClosestNote()
+    private (Note closestNote, float timeDifference) FindClosestNote()
     {
         Note closestNote = null;
         float currentTime = Time.time;
@@ -200,8 +216,8 @@ public class ActManager : MonoBehaviour
         {
             if (!note.isPast)
             {
-                float timeDifference = Mathf.Abs(note.expectedAbsoluteTime - currentTime);
-                if (timeDifference < smallestTimeDifference)
+                float timeDifference = note.expectedAbsoluteTime - currentTime;
+                if (Mathf.Abs(timeDifference) < Mathf.Abs(smallestTimeDifference))
                 {
                     smallestTimeDifference = timeDifference;
                     closestNote = note;
@@ -215,21 +231,27 @@ public class ActManager : MonoBehaviour
         bool isButtonDown = Input.GetMouseButton(0);
         if (isButtonDown && !isButtonDownAcrossUpdates)
         {
-            (Note closestNote, float timeDistance) = FindClosestNote();
+            Debug.Log("click!");
+            (Note closestNote, float timeDifference) = FindClosestNote();
             if (closestNote != null)
             {
-                Debug.Log($"Closest note is {closestNote.value}, with a difference of {timeDistance}");
-                /** Check if it's actually in range! */
-                closestNote.isPast = true;
-                closestNote.isHit = true;
 
-                /** Handle time difference logic here! */
-                StartCoroutine(ADSRCoroutine(1));
+                float toleranceWindow = 0.150f;
+                if (Math.Abs(timeDifference) < toleranceWindow)
+                {
+                    float subdivisionDuration = beatDuration / SUBDIVISIONS;
+                    float absNoteDuration = closestNote.length * subdivisionDuration;
+
+                    instrumentControl.QueueNote(absNoteDuration, timeDifference);
+
+                    closestNote.isPast = true;
+                    closestNote.isHit = true;
+                }
             }
         }
         else if (!isButtonDown && isButtonDownAcrossUpdates)
         {
-            StartCoroutine(ADSRCoroutine(0));
+            // StartCoroutine(ADSRCoroutine(0));
         }
         isButtonDownAcrossUpdates = isButtonDown;
     }
@@ -243,12 +265,11 @@ public class ActManager : MonoBehaviour
         if (note == null)
         {
             int notesSuccess = notes.Count(note => note.isHit);
-            Debug.Log($"You clicked successfully {notesSuccess} notes!");
         }
         if (note != null && !note.isPast && currentTime > note.expectedAbsoluteTime + toleranceWindow)
         {
             note.isPast = true;
-            Debug.Log($"Missed note {note.value}!");
+            // Debug.Log($"Missed note {note.value}!");
         }
     }
 
