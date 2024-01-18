@@ -1,0 +1,13 @@
+{a438c80d-c325-4c60-9477-9485dc74a150} bank:/Act1
+{658a3847-5e46-4bd3-a648-17c1e0bb01cd} bank:/Master
+{fd971893-2f3d-0791-2001-9d3f11480755} bank:/Master.strings
+{5f3d8e25-398c-45be-b664-c7a2c80204fc} bus:/
+{a4b45347-33c9-4f3b-8d40-99f6c240629d} bus:/Mix
+{6695cb93-cf99-487c-a877-4cc0bd1befb1} bus:/SFX
+{0b626ead-10c9-46c4-a3d3-3e69a699d47c} bus:/SFX/Ambiance
+{510e3c20-f3a6-41f6-adf5-65ad3046dd36} bus:/SFX/Pause
+{cc1dd43c-467f-452c-af76-f3b7d6f44332} event:/Act1
+{7e29c01d-c1e2-4548-982e-fedfc7105af4} event:/Act1Ambiance
+{517316d9-8984-4930-9348-616ce1342433} event:/GameStatus
+{eb420550-0000-418c-9b73-ee755e2c8cb9} parameter:/GamePause
+{2910ad78-c6c1-4fd6-8a34-8484b059a27b} snapshot:/GamePause
