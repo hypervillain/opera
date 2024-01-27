@@ -102,11 +102,23 @@ public class ActManager : MonoBehaviour
         {
             int notesSuccess = noteEvents.Count(note => note.isHit);
         }
-        if (note != null && centralAudioSource.ElapsedTime > note.timing + toleranceWindow)
+        if (note != null)
         {
-            note.isPast = true;
-            // Debug.Log($"Missed note {note.value}!");
+            float timeDifference = note.timing - centralAudioSource.ElapsedTime;
+            if (Math.Abs(timeDifference) < toleranceWindow)
+            {
+
+                instrumentControl.Play(note);
+                note.isPast = true;
+
+            }
+
         }
+        // if (note != null && centralAudioSource.ElapsedTime > note.timing + toleranceWindow)
+        // {
+        //     note.isPast = true;
+        //     // Debug.Log($"Missed note {note.value}!");
+        // }
     }
 
     void Update()

@@ -69,6 +69,16 @@ public class CentralAudioSource : MonoBehaviour
         }
     }
 
+    public float GetVolumeControlValue()
+    {
+        if (isEventStarted)
+        {
+            eventInstance.getParameterByName("VolumeControl", out float parameterValue);
+            return parameterValue;
+        }
+        return 0;
+    }
+
     public void TogglePauseEvent()
     {
         if (isEventStarted)

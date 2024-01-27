@@ -5,11 +5,9 @@ using System;
 
 public class InstrumentControl : MonoBehaviour
 {
-    private EventInstance eventInstance;
     private Coroutine currentCoroutine;
-    private Func<float> getElapsedTime;
     private float endOfNoteEvent;
-
+    private bool envelopeIsReleasing;
     private CentralAudioSource instrumentAudioSource;
 
 
@@ -20,49 +18,61 @@ public class InstrumentControl : MonoBehaviour
 
     public void Play(NoteEvent note)
     {
-
-        if (currentCoroutine != null)
+        float initialVolumeControlValue = 0f;
+        if (currentCoroutine != null && envelopeIsReleasing == false)
         {
             endOfNoteEvent = note.timing + note.length;
             return;
         }
+        if (currentCoroutine != null)
+        {
+            /**
+                If envelope is releasing, use current volume value as starting value for new coroutine
+            */
+            initialVolumeControlValue = instrumentAudioSource.GetVolumeControlValue();
+            StopCoroutine(currentCoroutine);
+        }
 
-        float currentTime = getElapsedTime();
+        float currentTime = instrumentAudioSource.ElapsedTime;
         float timeDifference = note.timing - currentTime;
         /**
             If timeDifference > 0, we're starting early. Delay sustain phase by the value of timeDifference.
             If timeDifference < 0, we're starting late. Add minimal attack to prevent clicks in the audio.
         */
-        float attackDuration = timeDifference > 0 ? timeDifference : 0.05f;
+        float attackDuration = timeDifference > 0 ? timeDifference : 0.08f;
         endOfNoteEvent = note.timing + note.length;
 
-        currentCoroutine = StartCoroutine(ASRCoroutine(attackDuration));
+        currentCoroutine = StartCoroutine(ASRCoroutine(attackDuration, initialVolumeControlValue));
     }
 
-    private IEnumerator ASRCoroutine(float attackDuration)
+    private IEnumerator ASRCoroutine(float attackDuration, float initialVolumeControlValue)
     {
-        float startTime = getElapsedTime();
-        while (getElapsedTime() - startTime < attackDuration)
+        float startTime = instrumentAudioSource.ElapsedTime;
+        while (instrumentAudioSource.ElapsedTime - startTime < attackDuration)
         {
-            float normalizedTime = (getElapsedTime() - startTime) / attackDuration;
-            instrumentAudioSource.SetVolumeControl(normalizedTime);
-
+            float normalizedTime = (instrumentAudioSource.ElapsedTime - startTime) / attackDuration;
+            float currentValue = Mathf.Lerp(initialVolumeControlValue, 1, normalizedTime);
+            instrumentAudioSource.SetVolumeControl(currentValue);
             yield return null;
         }
+
         instrumentAudioSource.SetVolumeControl(1f);
-        while (getElapsedTime() < endOfNoteEvent || (/** TODO: handle held notes */ false))
+        while (instrumentAudioSource.ElapsedTime < endOfNoteEvent || (/** TODO: handle held notes */ false))
         {
             yield return null;
         }
 
-        /** Note that extending sustain duration only works if it's done before release */
-        while (getElapsedTime() - startTime < 0.5f)
+        envelopeIsReleasing = true;
+        float releaseDuration = 0.150f;
+        float releaseStartTime = instrumentAudioSource.ElapsedTime;
+        while (instrumentAudioSource.ElapsedTime - releaseStartTime < releaseDuration)
         {
-            float normalizedTime = 1 - ((Time.time - startTime) / 0.2f);
+            float normalizedTime = 1 - ((instrumentAudioSource.ElapsedTime - releaseStartTime) / releaseDuration);
             instrumentAudioSource.SetVolumeControl(normalizedTime);
             yield return null;
         }
         instrumentAudioSource.SetVolumeControl(0f);
         currentCoroutine = null;
+        envelopeIsReleasing = false;
     }
 }

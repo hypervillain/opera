@@ -42,7 +42,7 @@ public class ScoreManager : MonoBehaviour
         return noteEvents;
     }
 
-    public NoteEvent GetNextNote(float time)
+    public NoteEvent GetNextNote()
     {
         return noteEvents.FirstOrDefault(noteEvent => !noteEvent.isPast);
     }
@@ -51,7 +51,7 @@ public class ScoreManager : MonoBehaviour
     {
         float toleranceWindow = 0.150f;
 
-        NoteEvent note = GetNextNote(elapsedTime);
+        NoteEvent note = GetNextNote();
         if (note == null)
         {
             Debug.Log("Done!");
