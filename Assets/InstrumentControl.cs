@@ -1,67 +1,68 @@
 using UnityEngine;
 using FMOD.Studio;
 using System.Collections;
+using System;
 
 public class InstrumentControl : MonoBehaviour
 {
     private EventInstance eventInstance;
+    private Coroutine currentCoroutine;
+    private Func<float> getElapsedTime;
+    private float endOfNoteEvent;
 
-    public void Initialize(EventInstance newInstance)
+    private CentralAudioSource instrumentAudioSource;
+
+
+    public void Initialize(CentralAudioSource audioSource)
     {
-        eventInstance = newInstance;
+        instrumentAudioSource = audioSource;
     }
 
-    public void QueueNote(float noteDuration, float timeDifference)
+    public void Play(NoteEvent note)
     {
+
+        if (currentCoroutine != null)
+        {
+            endOfNoteEvent = note.timing + note.length;
+            return;
+        }
+
+        float currentTime = getElapsedTime();
+        float timeDifference = note.timing - currentTime;
         /**
-            If timeDifference >= 0, we're starting early. Delay sustain by the value of timeDifference.
+            If timeDifference > 0, we're starting early. Delay sustain phase by the value of timeDifference.
             If timeDifference < 0, we're starting late. Add minimal attack to prevent clicks in the audio.
         */
-        float attackDuration;
-        float sustainDuration;
+        float attackDuration = timeDifference > 0 ? timeDifference : 0.05f;
+        endOfNoteEvent = note.timing + note.length;
 
-        float genericAttackDuration = 0.05f;
-        float genericReleaseDuration = 0.01f;
-
-        if (timeDifference < 0)
-        {
-            attackDuration = genericAttackDuration;
-            sustainDuration = noteDuration - genericAttackDuration - genericReleaseDuration;
-        }
-        else
-        {
-            attackDuration = timeDifference;
-            sustainDuration = noteDuration - genericReleaseDuration;
-        }
-
-        Debug.Log($"ASR with {attackDuration} {sustainDuration} {genericReleaseDuration}");
-        StartCoroutine(ASRCoroutine(attackDuration, sustainDuration, genericReleaseDuration));
+        currentCoroutine = StartCoroutine(ASRCoroutine(attackDuration));
     }
 
-    private IEnumerator ASRCoroutine(float attackDuration, float sustainDuration, float releaseDuration)
+    private IEnumerator ASRCoroutine(float attackDuration)
     {
-        float startTime = Time.time;
-        Debug.Log("attack");
-        while (Time.time - startTime < attackDuration)
+        float startTime = getElapsedTime();
+        while (getElapsedTime() - startTime < attackDuration)
         {
-            float normalizedTime = (Time.time - startTime) / attackDuration;
-            eventInstance.setParameterByName("VolumeControl", normalizedTime);
+            float normalizedTime = (getElapsedTime() - startTime) / attackDuration;
+            instrumentAudioSource.SetVolumeControl(normalizedTime);
+
+            yield return null;
+        }
+        instrumentAudioSource.SetVolumeControl(1f);
+        while (getElapsedTime() < endOfNoteEvent || (/** TODO: handle held notes */ false))
+        {
             yield return null;
         }
 
-        Debug.Log("sustain");
-        eventInstance.setParameterByName("VolumeControl", 1f);
-        yield return new WaitForSeconds(sustainDuration);
-
-        startTime = Time.time;
-        Debug.Log("release");
-        while (Time.time - startTime < releaseDuration)
+        /** Note that extending sustain duration only works if it's done before release */
+        while (getElapsedTime() - startTime < 0.5f)
         {
-            float normalizedTime = 1 - ((Time.time - startTime) / releaseDuration);
-            eventInstance.setParameterByName("VolumeControl", normalizedTime);
+            float normalizedTime = 1 - ((Time.time - startTime) / 0.2f);
+            instrumentAudioSource.SetVolumeControl(normalizedTime);
             yield return null;
         }
-        Debug.Log("end");
-        eventInstance.setParameterByName("VolumeControl", 0f);
+        instrumentAudioSource.SetVolumeControl(0f);
+        currentCoroutine = null;
     }
 }
