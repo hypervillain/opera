@@ -7,7 +7,6 @@ public class InstrumentControl : MonoBehaviour
 {
     private Coroutine currentCoroutine;
     private float endOfNoteEvent;
-    private bool envelopeIsReleasing;
     private CentralAudioSource instrumentAudioSource;
 
 
@@ -19,18 +18,10 @@ public class InstrumentControl : MonoBehaviour
     public void Play(NoteEvent note)
     {
         float initialVolumeControlValue = 0f;
-        if (currentCoroutine != null && envelopeIsReleasing == false)
-        {
-            endOfNoteEvent = note.timing + note.length;
-            return;
-        }
         if (currentCoroutine != null)
         {
-            /**
-                If envelope is releasing, use current volume value as starting value for new coroutine
-            */
-            initialVolumeControlValue = instrumentAudioSource.GetVolumeControlValue();
             StopCoroutine(currentCoroutine);
+            initialVolumeControlValue = instrumentAudioSource.GetVolumeControlValue();
         }
 
         float currentTime = instrumentAudioSource.ElapsedTime;
@@ -62,7 +53,6 @@ public class InstrumentControl : MonoBehaviour
             yield return null;
         }
 
-        envelopeIsReleasing = true;
         float releaseDuration = 0.150f;
         float releaseStartTime = instrumentAudioSource.ElapsedTime;
         while (instrumentAudioSource.ElapsedTime - releaseStartTime < releaseDuration)
@@ -73,6 +63,5 @@ public class InstrumentControl : MonoBehaviour
         }
         instrumentAudioSource.SetVolumeControl(0f);
         currentCoroutine = null;
-        envelopeIsReleasing = false;
     }
 }

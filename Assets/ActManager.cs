@@ -71,12 +71,19 @@ public class ActManager : MonoBehaviour
         bool isButtonDown = Input.GetMouseButton(0);
         if (isButtonDown && !isButtonDownAcrossUpdates)
         {
-            NoteEvent closestNote = scoreManager.GetNextNote(Time.time);
+            NoteEvent closestNote = scoreManager.GetNextNote();
             if (closestNote != null)
             {
                 float toleranceWindow = 0.150f;
                 float timeDifference = closestNote.timing - centralAudioSource.ElapsedTime;
-                if (Math.Abs(timeDifference) < toleranceWindow)
+
+                /**
+                    Use these to test instrument!
+                */
+                bool isVeryWellInTime = Math.Abs(timeDifference) < 0.1;
+                bool IsSlightlyOffBeatAfter = closestNote.timing < centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
+                bool IsSlightlyOffBeatBefore = closestNote.timing > centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
+                if (IsSlightlyOffBeatBefore)
                 {
 
                     instrumentControl.Play(closestNote);
