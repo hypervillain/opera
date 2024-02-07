@@ -83,7 +83,7 @@ public class ActManager : MonoBehaviour
                 bool isVeryWellInTime = Math.Abs(timeDifference) < 0.1;
                 bool IsSlightlyOffBeatAfter = closestNote.timing < centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
                 bool IsSlightlyOffBeatBefore = closestNote.timing > centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
-                if (IsSlightlyOffBeatBefore)
+                if (isVeryWellInTime && UnityEngine.Random.value < 0.5f)
                 {
 
                     instrumentControl.Play(closestNote);
@@ -112,14 +112,15 @@ public class ActManager : MonoBehaviour
         if (note != null)
         {
             float timeDifference = note.timing - centralAudioSource.ElapsedTime;
-            if (Math.Abs(timeDifference) < toleranceWindow)
+            bool isVeryWellInTime = Math.Abs(timeDifference) < 0.1;
+            if (isVeryWellInTime && UnityEngine.Random.value < 0.01f)
             {
 
                 instrumentControl.Play(note);
+
                 note.isPast = true;
-
+                note.isHit = true;
             }
-
         }
         // if (note != null && centralAudioSource.ElapsedTime > note.timing + toleranceWindow)
         // {
