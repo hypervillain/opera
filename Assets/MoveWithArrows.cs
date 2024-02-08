@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MoveWithArrows : MonoBehaviour
 {
-    public float speed;
+    public float speed = 25f;
 
     void Update()
     {

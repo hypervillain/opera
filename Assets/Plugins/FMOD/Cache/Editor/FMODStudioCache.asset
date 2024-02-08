@@ -35,7 +35,7 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638412032528257100
+  lastModified: 638429423490953863
   FileSizes:
   - Name: Desktop
     Value: 1256
@@ -174,7 +174,7 @@ MonoBehaviour:
   - {fileID: 6869102606325236498}
   StringsBanks:
   - {fileID: -7376072191608544489}
-  cacheTime: 638412032528257100
+  cacheTime: 638429425812655853
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -218,10 +218,10 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Act1.bank
   Name: Act1
   StudioPath: bank:/Act1
-  lastModified: 638412032528231267
+  lastModified: 638429425812655853
   FileSizes:
   - Name: Desktop
-    Value: 1234176
+    Value: 3726496
   Exists: 1
 --- !u!114 &2528397869509193884
 MonoBehaviour:
@@ -245,12 +245,12 @@ MonoBehaviour:
   - {fileID: 2168581434699278621}
   IsStream: 1
   Is3D: 0
-  IsOneShot: 0
+  IsOneShot: 1
   Parameters:
   - {fileID: -4857720914934104748}
   MinDistance: 1
   MaxDistance: 20
-  Length: 33391
+  Length: 227030
 --- !u!114 &2757082664467620526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,7 +270,7 @@ MonoBehaviour:
     Data3: -768823645
     Data4: -107092612
   Banks:
-  - {fileID: 2168581434699278621}
+  - {fileID: 6869102606325236498}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
@@ -333,10 +333,10 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638412032528247170
+  lastModified: 638429423490943043
   FileSizes:
   - Name: Desktop
-    Value: 2808
+    Value: 5472
   Exists: 1
 --- !u!114 &7080395888623521328
 MonoBehaviour:

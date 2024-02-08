@@ -20,7 +20,7 @@ namespace Obi
             if (path.ControlPointCount < 2)
             {
                 ClearParticleGroups();
-                path.InsertControlPoint(0, Vector3.left, Vector3.left * 0.25f, Vector3.right * 0.25f, Vector3.up, DEFAULT_PARTICLE_MASS, 1, 1, ObiUtils.MakeFilter(ObiUtils.CollideWithEverything,1), Color.white, "control point");
+                path.InsertControlPoint(0, Vector3.left, Vector3.left * 0.25f, Vector3.right * 0.25f, Vector3.up, DEFAULT_PARTICLE_MASS, 1, 1, ObiUtils.MakeFilter(ObiUtils.CollideWithEverything, 1), Color.white, "control point");
                 path.InsertControlPoint(1, Vector3.right, Vector3.left * 0.25f, Vector3.right * 0.25f, Vector3.up, DEFAULT_PARTICLE_MASS, 1, 1, ObiUtils.MakeFilter(ObiUtils.CollideWithEverything, 1), Color.white, "control point");
             }
 

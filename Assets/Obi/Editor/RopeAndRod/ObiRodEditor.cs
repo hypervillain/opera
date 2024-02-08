@@ -78,14 +78,14 @@ namespace Obi
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUIUtility.labelWidth);
                 EditorGUI.BeginChangeCheck();
-                bool edit = GUILayout.Toggle(EditorTools.activeToolType == typeof(ObiPathEditor), new GUIContent(Resources.Load<Texture2D>("EditCurves")), "Button", GUILayout.MaxWidth(36), GUILayout.MaxHeight(24));
+                bool edit = GUILayout.Toggle(ToolManager.activeToolType == typeof(ObiPathEditor), new GUIContent(Resources.Load<Texture2D>("EditCurves")), "Button", GUILayout.MaxWidth(36), GUILayout.MaxHeight(24));
                 EditorGUILayout.LabelField("Edit path", editLabelStyle, GUILayout.ExpandHeight(true), GUILayout.MaxHeight(24));
                 if (EditorGUI.EndChangeCheck())
                 {
                     if (edit)
-                        EditorTools.SetActiveTool<ObiPathEditor>();
+                        ToolManager.SetActiveTool<ObiPathEditor>();
                     else
-                        EditorTools.RestorePreviousPersistentTool();
+                        ToolManager.RestorePreviousPersistentTool();
 
                     SceneView.RepaintAll();
                 }
@@ -108,7 +108,7 @@ namespace Obi
                 actor.rodBlueprint.GenerateImmediate();
             }
 
-            using (new EditorGUI.DisabledScope(EditorTools.activeToolType == typeof(ObiPathEditor)))
+            using (new EditorGUI.DisabledScope(ToolManager.activeToolType == typeof(ObiPathEditor)))
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(rodBlueprint, new GUIContent("Blueprint"));
