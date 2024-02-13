@@ -71,10 +71,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# OSX
 *.DS_*
 
+# Fmod
+fmod_editor.log
 Studio/.unsaved
 Studio/.cache
-
-
-fmod_editor.log
