@@ -6,6 +6,7 @@ using Obi;
 
 public class NoteTargetController : MonoBehaviour
 {
+    public int dev_elementIndex = 10;
     public GameObject player;
     public GameObject noteTargetPrefab;
 
@@ -17,16 +18,17 @@ public class NoteTargetController : MonoBehaviour
     }
 	void Update ()
     {
-        int lastParticle = rope.elements[rope.elements.Count - 1].particle2;
+        int lastParticle = rope.elements[rope.elements.Count - dev_elementIndex].particle2;
         Vector3 lastPosition = rope.solver.positions[lastParticle];
         Vector3 worldPosition = rope.transform.TransformPoint(lastPosition);
 
         Debug.Log($"lastPosition {lastPosition}, worldPosition {worldPosition}");
 
         if (currentNoteTarget != null) {
-            currentNoteTarget.transform.position = worldPosition;
+            currentNoteTarget.transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.1f);
+
         } else {
-            currentNoteTarget = Instantiate(noteTargetPrefab, worldPosition, Quaternion.identity);
+            currentNoteTarget = Instantiate(noteTargetPrefab, new Vector3(worldPosition.x, worldPosition.y, -0.1f), Quaternion.identity);
         }
         // int lastParticle = rope.elements[rope.elements.Count-1].particle2;
         // var lastPosition = rope.solver.positions[lastParticle];
