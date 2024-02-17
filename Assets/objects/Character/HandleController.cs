@@ -31,7 +31,7 @@ public class HandleController : MonoBehaviour
     {
         float distance = Vector3.Distance(handle.transform.position, player.transform.position);
         float finalDistance = Mathf.Clamp(distance, minDistanceHandleToPlayer, _initialDistanceHandleToPlayer);
-        Debug.Log($"distance {distance} {ropes[0].restLength}");
+        // Debug.Log($"distance {distance} {ropes[0].restLength}");
         for (int i = 0; i < cursors.Length; i++)
         {
             cursors[i].ChangeLength(distance);
