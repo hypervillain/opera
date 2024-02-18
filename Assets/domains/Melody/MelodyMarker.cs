@@ -19,8 +19,7 @@ public class MelodyMarker : MonoBehaviour
 	void Update ()
     {
         int lastParticle = rope.elements[rope.elements.Count - dev_elementIndex].particle2;
-        Vector3 lastPosition = rope.solver.positions[lastParticle];
-        Vector3 worldPosition = rope.transform.TransformPoint(lastPosition);
+        Vector3 worldPosition = rope.transform.TransformPoint(rope.solver.positions[lastParticle]);
 
         if (melodyMarker != null) {
             melodyMarker.transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.1f);

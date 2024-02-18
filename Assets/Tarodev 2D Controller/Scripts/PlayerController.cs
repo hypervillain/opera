@@ -7,6 +7,7 @@ namespace TarodevController
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CapsuleCollider2D))]
     public class PlayerController : MonoBehaviour, IPlayerController, IPhysicsObject
     {
+        public bool DEBUG;
         #region References
 
         private BoxCollider2D _collider;
@@ -306,6 +307,9 @@ namespace TarodevController
             _grounded = grounded;
             if (grounded)
             {
+                if (DEBUG) {
+                    Debug.Log("Grounded!");
+                }
                 GroundedChanged?.Invoke(true, _lastFrameY);
                 _rb.gravityScale = 0;
                 SetVelocity(_trimmedFrameVelocity);
@@ -319,6 +323,9 @@ namespace TarodevController
             }
             else
             {
+                if (DEBUG) {
+                    Debug.Log("Not Grounded!");
+                }
                 GroundedChanged?.Invoke(false, 0);
                 _timeLeftGrounded = _time;
                 _rb.gravityScale = GRAVITY_SCALE;
