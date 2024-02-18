@@ -28,6 +28,9 @@ public class ActManager : MonoBehaviour
     private ScoreManager scoreManager;
     public CentralAudioSource centralAudioSource;
 
+    public static event Action<float> OnElapsedTimeChanged;
+    public static event Action<List<NoteEvent>> OnMelodyReady;
+    public static event Action<int, int> OnBPMReady;
     private (int measure, int beat, int subdivision, float time) currentBeatInfo;
 
     private IEnumerator SubdivisionRoutine(int measure, int beat)
@@ -46,6 +49,8 @@ public class ActManager : MonoBehaviour
         scoreManager = gameObject.AddComponent<ScoreManager>();
 
         noteEvents = scoreManager.Initialize("Song1");
+        OnMelodyReady(noteEvents);
+        OnBPMReady(115, 4);
 
         if (centralAudioSource == null)
         {
@@ -135,6 +140,7 @@ public class ActManager : MonoBehaviour
         {
             Debug(centralAudioSource.ElapsedTime);
         }
+        OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
         UpdateNoteStatus();
         HandleClickUpdate();
     }
