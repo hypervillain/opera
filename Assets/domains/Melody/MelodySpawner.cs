@@ -37,7 +37,6 @@ public class MelodySpawner : MonoBehaviour
     private void OnBPMReady(int bpm, int signature)
     {
         _noteFallInElapsedTime = 60f / bpm * noteFallInTimeInBeats;
-        Debug.Log($"Note Fall in elapsed time {_noteFallInElapsedTime}");
     }
 
     private void OnMelodyReady(List<NoteEvent> noteEvents)
@@ -89,25 +88,31 @@ public class MelodySpawner : MonoBehaviour
 
             if (instanceAtRopeIndex.Instance == null)
             {
-                GameObject instance = Instantiate(melodyEventPrefab, /** temp */targetRope.transform.position, Quaternion.identity);
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, 0).Item2;
+                GameObject instance = Instantiate(melodyEventPrefab, position, Quaternion.identity);
                 instanceAtRopeIndex.Instance = instance;
             }
 
             else
             {
-                var position = instanceAtRopeIndex.Instance.transform.position;
+                float fallProgress = (_elapsedTime - (melodyEvent.timing - _noteFallInElapsedTime)) / _noteFallInElapsedTime;
+                float percentagePosition = fallProgress * 0.9f; // 0.9f should not be infered. Move MelodyMarker here tomorrow
+
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition).Item2;
                 instanceAtRopeIndex.Instance.transform.position = new Vector3(position.x, position.y - 0.01f, position.z);
             }
         }
     }
 
-    private void CalculateRelativeRopePosition(ObiRope rope, MelodyEvent melodyEvent)
-    {
-        // TODO
-    }
-
     private void ReleaseMelodyEvent(MelodyEvent melodyEvent)
     {
-        // TODO
+        foreach (MelodyInstanceAtRopeIndex instanceAtRopeIndex in melodyEvent.instancesAtRopeIndex)
+        {
+            if (instanceAtRopeIndex.Instance != null)
+            {
+                Destroy(instanceAtRopeIndex.Instance);
+                instanceAtRopeIndex.Instance = null;
+            }
+        }
     }
 }

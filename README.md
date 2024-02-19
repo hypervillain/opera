@@ -6,3 +6,6 @@ Version 2022.3.19f1 (Silicon)
 
 Latest Unity verified version: 2.02.19
 
+### VSCode
+
+Unity Toolbox recommended

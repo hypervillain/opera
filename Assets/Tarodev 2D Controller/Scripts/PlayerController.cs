@@ -66,6 +66,9 @@ namespace TarodevController
             Active = on;
 
             _rb.isKinematic = !on;
+            if (DEBUG) {
+                Debug.Log("Player Toggled!");
+            }
             ToggledPlayer?.Invoke(on);
         }
 
