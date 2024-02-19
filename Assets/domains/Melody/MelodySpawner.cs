@@ -66,7 +66,7 @@ public class MelodySpawner : MonoBehaviour
 
         foreach (MelodyEvent melodyEvent in _melodyEvents)
         {
-            if (_elapsedTime >= (melodyEvent.timing - 0.150f) && _elapsedTime <= (melodyEvent.timing + _noteFallInElapsedTime))
+            if (_elapsedTime <= (melodyEvent.timing + 0.150f) && _elapsedTime >= (melodyEvent.timing - _noteFallInElapsedTime))
             {
                 SpawnOrUpdateMelodyEvent(melodyEvent);
             }

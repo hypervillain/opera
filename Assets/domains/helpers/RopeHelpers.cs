@@ -13,6 +13,7 @@ public static class RopeHelpers
         int particlePositionIndex = rope.elements[index < 0 ? rope.elements.Count + index : index].particle1;
         Vector3 position = rope.solver.positions[particlePositionIndex];
         Vector3 worldPosition = rope.transform.TransformPoint(position);
+        // Debug.Log($"Element Index: {index}, Particle Position Index: {particlePositionIndex}, Local Position: {position}, World Position: {worldPosition}");
         return (position, worldPosition);
     }
 
