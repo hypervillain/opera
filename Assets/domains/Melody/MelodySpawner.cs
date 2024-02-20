@@ -8,10 +8,16 @@ using Obi;
 public class MelodySpawner : MonoBehaviour
 {
     public int noteFallInTimeInBeats = 4;
+    public float melodyMarkerPositionPercentage = 0.90f;
+
+    /** polarity */
+    public RopeHelpers.RopeDirection ropeDirection = RopeHelpers.RopeDirection.Up;
+
     [SerializeField] private ObiRope[] ropes;
     [SerializeField] private GameObject melodyEventPrefab;
+    [SerializeField] private GameObject melodyMarkerPrefab;
 
-    private MelodyMarker[] _melodyMarkers;
+    private GameObject[] _melodyMarkers;
     private List<MelodyEvent> _melodyEvents = new List<MelodyEvent>();
     private float _elapsedTime;
     private float _noteFallInElapsedTime;
@@ -21,13 +27,7 @@ public class MelodySpawner : MonoBehaviour
         ActManager.OnElapsedTimeChanged += HandleElapsedTimeChanged;
         ActManager.OnMelodyReady += OnMelodyReady;
         ActManager.OnBPMReady += OnBPMReady;
-        _melodyMarkers = new MelodyMarker[ropes.Length];
-        for (int i = 0; i < ropes.Length; i++) {
-            _melodyMarkers[i] = ropes[i].GetComponent<MelodyMarker>();
-            if (_melodyMarkers[i] == null) {
-                throw new Exception("Rope is missing MelodyMarker component");
-            }
-        }
+        _melodyMarkers = new GameObject[ropes.Length];
     }
     private void HandleElapsedTimeChanged(float elapsedTime)
     {
@@ -59,6 +59,7 @@ public class MelodySpawner : MonoBehaviour
 
 	void Update ()
     {
+        UpdateMelodyMarkers();
         if (_melodyEvents == null || _melodyEvents.Count == 0)
         {
             return;
@@ -76,6 +77,18 @@ public class MelodySpawner : MonoBehaviour
         }
     }
 
+    private void UpdateMelodyMarkers()
+    {
+        for (int i = 0; i < ropes.Length; i++) {
+            var worldPosition = RopeHelpers.GetParticlePositionByRopeLengthPercentage(ropes[i], melodyMarkerPositionPercentage, ropeDirection).Item2;
+            if (_melodyMarkers[i] != null) {
+                _melodyMarkers[i].transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.1f);
+            } else {
+                _melodyMarkers[i] = Instantiate(melodyMarkerPrefab, new Vector3(worldPosition.x, worldPosition.y, -0.1f), Quaternion.identity);
+            }
+        }
+    }
+
     private void SpawnOrUpdateMelodyEvent(MelodyEvent melodyEvent)
     {
         foreach (MelodyInstanceAtRopeIndex instanceAtRopeIndex in melodyEvent.instancesAtRopeIndex)
@@ -88,7 +101,7 @@ public class MelodySpawner : MonoBehaviour
 
             if (instanceAtRopeIndex.Instance == null)
             {
-                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, 0).Item2;
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, 0, ropeDirection).Item2;
                 GameObject instance = Instantiate(melodyEventPrefab, position, Quaternion.identity);
                 instanceAtRopeIndex.Instance = instance;
             }
@@ -96,9 +109,9 @@ public class MelodySpawner : MonoBehaviour
             else
             {
                 float fallProgress = (_elapsedTime - (melodyEvent.timing - _noteFallInElapsedTime)) / _noteFallInElapsedTime;
-                float percentagePosition = fallProgress * 0.9f; // 0.9f should not be infered. Move MelodyMarker here tomorrow
+                float percentagePosition = fallProgress * melodyMarkerPositionPercentage;
 
-                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition).Item2;
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition, ropeDirection).Item2;
                 instanceAtRopeIndex.Instance.transform.position = new Vector3(position.x, position.y - 0.01f, position.z);
             }
         }
