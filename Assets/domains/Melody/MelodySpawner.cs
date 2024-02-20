@@ -82,9 +82,9 @@ public class MelodySpawner : MonoBehaviour
         for (int i = 0; i < ropes.Length; i++) {
             var worldPosition = RopeHelpers.GetParticlePositionByRopeLengthPercentage(ropes[i], melodyMarkerPositionPercentage, ropeDirection).Item2;
             if (_melodyMarkers[i] != null) {
-                _melodyMarkers[i].transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.1f);
+                _melodyMarkers[i].transform.position = new Vector3(worldPosition.x, worldPosition.y, 0);
             } else {
-                _melodyMarkers[i] = Instantiate(melodyMarkerPrefab, new Vector3(worldPosition.x, worldPosition.y, -0.1f), Quaternion.identity);
+                _melodyMarkers[i] = Instantiate(melodyMarkerPrefab, new Vector3(worldPosition.x, worldPosition.y, 0), Quaternion.identity);
             }
         }
     }
