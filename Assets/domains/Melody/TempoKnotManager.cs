@@ -56,13 +56,10 @@ public class TempoKnotManager: MonoBehaviour
             }
         }
 
-        CreateNewKnot(beatTracker);
+        CreateKnot(beatTracker);
 
-        foreach (KnotEvent knotEvent in knotsToRemove)
-        {
-            ReleaseKnot(knotEvent);
-            _knotEvents.Remove(knotEvent);
-        }
+        // Deez
+        ReleaseKnots(knotsToRemove);
     }
 
     public void Update()
@@ -77,24 +74,31 @@ public class TempoKnotManager: MonoBehaviour
         // no no
         RopeHelpers.RopeDirection ropeDirection = RopeHelpers.RopeDirection.Down;
 
-
+        List<KnotEvent> knotsToRemove = new List<KnotEvent>();
         foreach (KnotEvent knotEvent in _knotEvents)
         {
             float fallProgress = (_elapsedTime - (knotEvent.timing - _beatTracker.secondsPerMeasure)) / _beatTracker.secondsPerMeasure;
             float percentagePosition = fallProgress * melodyMarkerPositionPercentage;
+            if (percentagePosition >= 0.9)
+            {
+                Debug.Log($"delete knot event per percentage");
+                knotsToRemove.Add(knotEvent);
+            }
             for (int i = 0; i < knotEvent.Instances.Length; i++)
             {
                 if (_ropes[i] != null)
                 {
                     var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(_ropes[i], percentagePosition, ropeDirection).Item2;
-                    Debug.Log($"positioning {knotEvent.uniqueBeatNumber} at {percentagePosition}");
                     knotEvent.Instances[i].transform.position = position;
                 }
             }
         }
+
+        ReleaseKnots(knotsToRemove);
+
     }
 
-    private void CreateNewKnot(BeatTracker beatTracker)
+    private void CreateKnot(BeatTracker beatTracker)
     {
         GameObject[] instances = new GameObject[_ropes.Length];
 
@@ -113,6 +117,15 @@ public class TempoKnotManager: MonoBehaviour
             {
                 GameObject.Destroy(instance);
             }
+        }
+    }
+
+    private void ReleaseKnots(List<KnotEvent> knotsToRemove)
+    {
+        foreach (KnotEvent knotEvent in knotsToRemove)
+        {
+            ReleaseKnot(knotEvent);
+            _knotEvents.Remove(knotEvent);
         }
     }
 }
