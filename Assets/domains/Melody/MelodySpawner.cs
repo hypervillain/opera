@@ -7,7 +7,10 @@ using Obi;
 
 public class MelodySpawner : MonoBehaviour
 {
+    /** comes from song info */
     public int noteFallInTimeInBeats = 4;
+
+    /* same */
     public float melodyMarkerPositionPercentage = 0.90f;
 
     /** polarity */
@@ -17,26 +20,43 @@ public class MelodySpawner : MonoBehaviour
     [SerializeField] private GameObject melodyEventPrefab;
     [SerializeField] private GameObject melodyMarkerPrefab;
 
+    private TempoKnotManager knotManager;
+    [SerializeField] private GameObject knotPrefab;
+
+    private GameObject[][] _beatKnots;
     private GameObject[] _melodyMarkers;
     private List<MelodyEvent> _melodyEvents = new List<MelodyEvent>();
     private float _elapsedTime;
     private float _noteFallInElapsedTime;
+    private float _lastBeatTiming;
 
-    void Start ()
+    private (int measure, int beat, float timing) beatInfo;
+
+    void Awake ()
     {
-        ActManager.OnElapsedTimeChanged += HandleElapsedTimeChanged;
+        ActManager.OnElapsedTimeChanged += OnElapsedTimeChanged;
         ActManager.OnMelodyReady += OnMelodyReady;
         ActManager.OnBPMReady += OnBPMReady;
+        ActManager.OnBeatTrackerUpdate += OnBeatTrackerUpdate;
         _melodyMarkers = new GameObject[ropes.Length];
+        // if (isDisplayBeatInfo)
+        // {
+        // //    knotManager = new TempoKnotManager(ropes, knotPrefab, noteFallInTimeInBeats);
+        // }
     }
-    private void HandleElapsedTimeChanged(float elapsedTime)
+    private void OnElapsedTimeChanged(float elapsedTime)
     {
         _elapsedTime = elapsedTime;
     }
 
     private void OnBPMReady(int bpm, int signature)
     {
-        _noteFallInElapsedTime = 60f / bpm * noteFallInTimeInBeats;
+        _noteFallInElapsedTime = BeatHelpers.GetSecondsPerBeatFromBPM(bpm) * noteFallInTimeInBeats;
+    }
+
+    private void OnBeatTrackerUpdate(BeatTracker beatTracker)
+    {
+        //knotManager.OnBeatTrackerUpdate(beatTracker);
     }
 
     private void OnMelodyReady(List<NoteEvent> noteEvents)
@@ -60,6 +80,11 @@ public class MelodySpawner : MonoBehaviour
 	void Update ()
     {
         UpdateMelodyMarkers();
+        // if (isDisplayBeatInfo && knotManager != null)
+        // {
+        //     knotManager.UpdateTempoKnots(_elapsedTime, noteFallInTimeInBeats, melodyMarkerPositionPercentage, ropeDirection);
+        // }
+
         if (_melodyEvents == null || _melodyEvents.Count == 0)
         {
             return;
@@ -112,7 +137,7 @@ public class MelodySpawner : MonoBehaviour
                 float percentagePosition = fallProgress * melodyMarkerPositionPercentage;
 
                 var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition, ropeDirection).Item2;
-                instanceAtRopeIndex.Instance.transform.position = new Vector3(position.x, position.y - 0.01f, position.z);
+                instanceAtRopeIndex.Instance.transform.position = position;
             }
         }
     }

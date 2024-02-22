@@ -9,7 +9,7 @@ using FMOD;
 
 public class ActManager : MonoBehaviour
 {
-    public bool debug;
+    public bool isDebug;
     public UnityEngine.UI.Text debugText;
 
     private Coroutine subdivisionCoroutine;
@@ -27,18 +27,19 @@ public class ActManager : MonoBehaviour
     private InstrumentControl instrumentControl;
     private ScoreManager scoreManager;
     public CentralAudioSource centralAudioSource;
+    private BeatTracker beatTracker;
 
     public static event Action<float> OnElapsedTimeChanged;
     public static event Action<List<NoteEvent>> OnMelodyReady;
     public static event Action<int, int> OnBPMReady;
-    private (int measure, int beat, int subdivision, float time) currentBeatInfo;
+
+    public static event Action<BeatTracker> OnBeatTrackerUpdate;
 
     private IEnumerator SubdivisionRoutine(int measure, int beat)
     {
         float subdivisionDuration = beatDuration / SUBDIVISIONS;
         for (int i = 1; i <= SUBDIVISIONS; i++)
         {
-            currentBeatInfo = (measure, beat, i, Time.time);
             yield return new WaitForSeconds(subdivisionDuration);
         }
     }
@@ -50,6 +51,8 @@ public class ActManager : MonoBehaviour
 
         noteEvents = scoreManager.Initialize("Song1");
         OnMelodyReady(noteEvents);
+
+        beatTracker = new BeatTracker(115, 4);
         OnBPMReady(115, 4);
 
         if (centralAudioSource == null)
@@ -64,11 +67,13 @@ public class ActManager : MonoBehaviour
 
     private void OnAudioBeat(int FMODMeasure, int FMODBeat)
     {
-        if (subdivisionCoroutine != null)
-        {
-            StopCoroutine(subdivisionCoroutine);
-        }
-        subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(FMODMeasure, FMODBeat));
+        beatTracker.OnBeatUpdate(FMODMeasure, FMODBeat, centralAudioSource.ElapsedTime);
+        OnBeatTrackerUpdate(beatTracker);
+        // if (subdivisionCoroutine != null)
+        // {
+        //     StopCoroutine(subdivisionCoroutine);
+        // }
+        // subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(FMODMeasure, FMODBeat));
     }
 
     private void HandleClickUpdate()
@@ -136,16 +141,16 @@ public class ActManager : MonoBehaviour
 
     void Update()
     {
-        if (debug)
+        if (isDebug)
         {
-            Debug(centralAudioSource.ElapsedTime);
+            LogDebugInfo(centralAudioSource.ElapsedTime);
         }
-        OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
+        OnElapsedTimeChanged(centralAudioSource.ElapsedTime); // no
         UpdateNoteStatus();
         HandleClickUpdate();
     }
 
-    void Debug(float time)
+    void LogDebugInfo(float time)
     {
         if (debugText != null)
         {
