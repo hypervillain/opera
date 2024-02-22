@@ -56,7 +56,12 @@ public class TempoKnotManager: MonoBehaviour
             }
         }
 
-        CreateKnot(beatTracker);
+        // _noteFallInTimeInBeats here is actually something else
+        if ((beatTracker.uniqueBeatNumber + 1) % _noteFallInTimeInBeats == 0)
+        {
+            CreateKnot(beatTracker);
+        }
+        
 
         // Deez
         ReleaseKnots(knotsToRemove);
