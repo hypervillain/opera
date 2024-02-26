@@ -9,6 +9,7 @@ public class BeatTracker
     public int uniqueBeatNumber;
     public float secondsPerBeat;
     public float secondsPerMeasure;
+    public float elapsedTime;
 
     public BeatTracker(int bpm, int signature)
     {
@@ -19,6 +20,7 @@ public class BeatTracker
         this.signature = signature;
         
         this.timing = 0;
+        this.elapsedTime = 0;
         this.uniqueBeatNumber = 0;
         this.secondsPerBeat = BeatHelpers.GetSecondsPerBeatFromBPM(bpm);
         this.secondsPerMeasure = this.secondsPerBeat * signature;
@@ -29,7 +31,7 @@ public class BeatTracker
         this.beat = beat;
         this.timing = timing;
         this.measure = measure;
-        
+        this.elapsedTime = timing;
         this.uniqueBeatNumber = BeatHelpers.CalculateUniqueBeatNumber(measure, beat, signature);
     }
 }

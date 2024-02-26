@@ -20,49 +20,70 @@ public class ActManager : MonoBehaviour
 
     private int signature = 4; // TODO: query signature;
 
-    private bool isButtonDownAcrossUpdates = false;
-
     private List<NoteEvent> noteEvents;
 
+    public CentralAudioSource centralAudioSource;
+
+
+    private bool isButtonDownAcrossUpdates = false;
     private InstrumentControl instrumentControl;
     private ScoreManager scoreManager;
-    public CentralAudioSource centralAudioSource;
     private BeatTracker beatTracker;
+
+    public SceneData sceneData; // meh
+    public SceneData[] scenes;
+    public static ActManager Instance { get; private set; }
 
     public static event Action<float> OnElapsedTimeChanged;
     public static event Action<List<NoteEvent>> OnMelodyReady;
     public static event Action<int, int> OnBPMReady;
-
     public static event Action<BeatTracker> OnBeatTrackerUpdate;
 
-    private IEnumerator SubdivisionRoutine(int measure, int beat)
-    {
-        float subdivisionDuration = beatDuration / SUBDIVISIONS;
-        for (int i = 1; i <= SUBDIVISIONS; i++)
-        {
-            yield return new WaitForSeconds(subdivisionDuration);
-        }
-    }
+    // private IEnumerator SubdivisionRoutine(int measure, int beat)
+    // {
+    //     float subdivisionDuration = beatDuration / SUBDIVISIONS;
+    //     for (int i = 1; i <= SUBDIVISIONS; i++)
+    //     {
+    //         yield return new WaitForSeconds(subdivisionDuration);
+    //     }
+    // }
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Should I?
+    }
     void Start()
     {
         instrumentControl = gameObject.AddComponent<InstrumentControl>();
         scoreManager = gameObject.AddComponent<ScoreManager>();
-
-        noteEvents = scoreManager.Initialize("Song1");
-        OnMelodyReady(noteEvents);
-
-        beatTracker = new BeatTracker(115, 4);
-        OnBPMReady(115, 4);
-
         if (centralAudioSource == null)
         {
             throw new Exception("Please add centralAudioSource to ActManager");
         }
-        centralAudioSource.Play("event:/Act1", 115, 4);
-        instrumentControl.Initialize(centralAudioSource);
 
         CentralAudioSource.OnAudioBeat += OnAudioBeat;
+
+        LoadScene(0);
+    }
+
+    private void LoadScene(int index)
+    {
+        sceneData = scenes[index];
+        noteEvents = scoreManager.Initialize(sceneData.songDataName);
+        OnMelodyReady(noteEvents);
+
+        beatTracker = new BeatTracker(sceneData.bpm, sceneData.signature);
+        OnBPMReady(sceneData.bpm, sceneData.signature);
+
+        centralAudioSource.Play(sceneData.FMODEventName, sceneData.bpm, sceneData.signature);
+        instrumentControl.Initialize(centralAudioSource);
     }
 
     private void OnAudioBeat(int FMODMeasure, int FMODBeat)
@@ -141,13 +162,13 @@ public class ActManager : MonoBehaviour
 
     void Update()
     {
-        if (isDebug)
-        {
-            LogDebugInfo(centralAudioSource.ElapsedTime);
-        }
+        // if (isDebug)
+        // {
+        //     LogDebugInfo(centralAudioSource.ElapsedTime);
+        // }
         OnElapsedTimeChanged(centralAudioSource.ElapsedTime); // no
-        UpdateNoteStatus();
-        HandleClickUpdate();
+        // UpdateNoteStatus();
+        // HandleClickUpdate();
     }
 
     void LogDebugInfo(float time)

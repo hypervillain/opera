@@ -35,7 +35,7 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638430314000573038
+  lastModified: 638445848255542279
   FileSizes:
   - Name: Desktop
     Value: 1256
@@ -174,7 +174,7 @@ MonoBehaviour:
   - {fileID: 6869102606325236498}
   StringsBanks:
   - {fileID: -7376072191608544489}
-  cacheTime: 638430314156530038
+  cacheTime: 638445848255542279
   cacheVersion: 131609
 --- !u!114 &1894598740839284510
 MonoBehaviour:
@@ -218,10 +218,10 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Act1.bank
   Name: Act1
   StudioPath: bank:/Act1
-  lastModified: 638430314156528292
+  lastModified: 638445848255265171
   FileSizes:
   - Name: Desktop
-    Value: 3726496
+    Value: 1896768
   Exists: 1
 --- !u!114 &2528397869509193884
 MonoBehaviour:
@@ -250,7 +250,7 @@ MonoBehaviour:
   - {fileID: -4857720914934104748}
   MinDistance: 1
   MaxDistance: 20
-  Length: 227030
+  Length: 66792
 --- !u!114 &2757082664467620526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,7 +333,7 @@ MonoBehaviour:
   Path: Studio/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638430314156530038
+  lastModified: 638445848255530208
   FileSizes:
   - Name: Desktop
     Value: 5472

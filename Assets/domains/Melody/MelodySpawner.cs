@@ -8,22 +8,15 @@ using Obi;
 public class MelodySpawner : MonoBehaviour
 {
     /** comes from song info */
-    public int noteFallInTimeInBeats = 4;
+    public int speedFactor = 4;
 
     /* same */
     public float melodyMarkerPositionPercentage = 0.90f;
-
-    /** polarity */
-    public RopeHelpers.RopeDirection ropeDirection = RopeHelpers.RopeDirection.Up;
 
     [SerializeField] private ObiRope[] ropes;
     [SerializeField] private GameObject melodyEventPrefab;
     [SerializeField] private GameObject melodyMarkerPrefab;
 
-    private TempoKnotManager knotManager;
-    [SerializeField] private GameObject knotPrefab;
-
-    private GameObject[][] _beatKnots;
     private GameObject[] _melodyMarkers;
     private List<MelodyEvent> _melodyEvents = new List<MelodyEvent>();
     private float _elapsedTime;
@@ -37,12 +30,8 @@ public class MelodySpawner : MonoBehaviour
         ActManager.OnElapsedTimeChanged += OnElapsedTimeChanged;
         ActManager.OnMelodyReady += OnMelodyReady;
         ActManager.OnBPMReady += OnBPMReady;
-        ActManager.OnBeatTrackerUpdate += OnBeatTrackerUpdate;
+
         _melodyMarkers = new GameObject[ropes.Length];
-        // if (isDisplayBeatInfo)
-        // {
-        // //    knotManager = new TempoKnotManager(ropes, knotPrefab, noteFallInTimeInBeats);
-        // }
     }
     private void OnElapsedTimeChanged(float elapsedTime)
     {
@@ -51,12 +40,7 @@ public class MelodySpawner : MonoBehaviour
 
     private void OnBPMReady(int bpm, int signature)
     {
-        _noteFallInElapsedTime = BeatHelpers.GetSecondsPerBeatFromBPM(bpm) * noteFallInTimeInBeats;
-    }
-
-    private void OnBeatTrackerUpdate(BeatTracker beatTracker)
-    {
-        //knotManager.OnBeatTrackerUpdate(beatTracker);
+        _noteFallInElapsedTime = BeatHelpers.GetSecondsPerBeatFromBPM(bpm) * speedFactor;
     }
 
     private void OnMelodyReady(List<NoteEvent> noteEvents)
@@ -80,10 +64,6 @@ public class MelodySpawner : MonoBehaviour
 	void Update ()
     {
         UpdateMelodyMarkers();
-        // if (isDisplayBeatInfo && knotManager != null)
-        // {
-        //     knotManager.UpdateTempoKnots(_elapsedTime, noteFallInTimeInBeats, melodyMarkerPositionPercentage, ropeDirection);
-        // }
 
         if (_melodyEvents == null || _melodyEvents.Count == 0)
         {
@@ -105,7 +85,7 @@ public class MelodySpawner : MonoBehaviour
     private void UpdateMelodyMarkers()
     {
         for (int i = 0; i < ropes.Length; i++) {
-            var worldPosition = RopeHelpers.GetParticlePositionByRopeLengthPercentage(ropes[i], melodyMarkerPositionPercentage, ropeDirection).Item2;
+            var worldPosition = RopeHelpers.GetParticlePositionByRopeLengthPercentage(ropes[i], melodyMarkerPositionPercentage, ActManager.Instance.sceneData.ropeDirection).Item2;
             if (_melodyMarkers[i] != null) {
                 _melodyMarkers[i].transform.position = new Vector3(worldPosition.x, worldPosition.y, 0);
             } else {
@@ -126,7 +106,7 @@ public class MelodySpawner : MonoBehaviour
 
             if (instanceAtRopeIndex.Instance == null)
             {
-                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, 0, ropeDirection).Item2;
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, 0, ActManager.Instance.sceneData.ropeDirection).Item2;
                 GameObject instance = Instantiate(melodyEventPrefab, position, Quaternion.identity);
                 instanceAtRopeIndex.Instance = instance;
             }
@@ -136,7 +116,7 @@ public class MelodySpawner : MonoBehaviour
                 float fallProgress = (_elapsedTime - (melodyEvent.timing - _noteFallInElapsedTime)) / _noteFallInElapsedTime;
                 float percentagePosition = fallProgress * melodyMarkerPositionPercentage;
 
-                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition, ropeDirection).Item2;
+                var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(targetRope, percentagePosition, ActManager.Instance.sceneData.ropeDirection).Item2;
                 instanceAtRopeIndex.Instance.transform.position = position;
             }
         }
