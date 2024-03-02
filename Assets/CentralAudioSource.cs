@@ -2,31 +2,46 @@ using System;
 using UnityEngine;
 using FMOD.Studio;
 using FMODUnity;
-
-// Marshall
 using System.Runtime.InteropServices;
-
 
 public class CentralAudioSource : MonoBehaviour
 {
+    private static CentralAudioSource instance;
     private EventInstance eventInstance;
-    private StudioEventEmitter eventEmitter;
+    private bool isEventStarted = false;
+    private bool isEventPlaying = false;
 
+    private int bpm;
+    private int signature;
+
+    private float elapsedTime = 0;
     public static event Action<int, int> OnAudioBeat;
+    public bool IsPlaying => isEventPlaying;
+    public float ElapsedTime => elapsedTime;
 
-    void Start()
+    public EventInstance Play(string eventName, int _bpm, int _signature)
     {
-        eventEmitter = GetComponent<StudioEventEmitter>();
+        bpm = _bpm;
+        instance = this;
+        signature = _signature;
+        if (isEventStarted)
+        {
+            eventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            eventInstance.release();
+        }
 
-        if (eventEmitter)
-        {
-            eventInstance = eventEmitter.EventInstance;
-            eventInstance.setCallback(TimelineCallback, EVENT_CALLBACK_TYPE.TIMELINE_BEAT);
-        }
-        else
-        {
-            Debug.LogError("StudioEventEmitter component not found on object CentralAudioSource.");
-        }
+        eventInstance = RuntimeManager.CreateInstance(eventName);
+        eventInstance.setCallback(TimelineCallback, EVENT_CALLBACK_TYPE.TIMELINE_BEAT);
+        eventInstance.start();
+        isEventStarted = true;
+        isEventPlaying = true;
+        return eventInstance;
+    }
+
+    private void CalculateElapsedTime(int measure, int beat)
+    {
+        int totalBeats = (measure - 1) * signature + (beat - 1);
+        elapsedTime = totalBeats * 60f / bpm;
     }
 
     [AOT.MonoPInvokeCallback(typeof(EVENT_CALLBACK))]
@@ -35,17 +50,76 @@ public class CentralAudioSource : MonoBehaviour
         if (type == EVENT_CALLBACK_TYPE.TIMELINE_BEAT)
         {
             var beatParams = (TIMELINE_BEAT_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(FMOD.Studio.TIMELINE_BEAT_PROPERTIES));
-            int currentBeat = beatParams.beat;
-            int currentMeasure = beatParams.bar;
+            int beat = beatParams.beat;
+            int measure = beatParams.bar;
 
-            OnAudioBeat?.Invoke(currentBeat, currentMeasure);
+            instance?.CalculateElapsedTime(measure, beat);
+
+            OnAudioBeat?.Invoke(measure, beat);
         }
 
         return FMOD.RESULT.OK;
     }
 
+    public void SetVolumeControl(float value)
+    {
+        if (isEventStarted)
+        {
+            eventInstance.setParameterByName("VolumeControl", value);
+        }
+    }
+
+    public float GetVolumeControlValue()
+    {
+        if (isEventStarted)
+        {
+            eventInstance.getParameterByName("VolumeControl", out float parameterValue);
+            return parameterValue;
+        }
+        return 0;
+    }
+
+    public void TogglePauseEvent()
+    {
+        if (isEventStarted)
+        {
+            if (isEventPlaying)
+            {
+                Debug.Log("Pausing FMOD event");
+                eventInstance.setPaused(true);
+            }
+            else
+            {
+                eventInstance.setPaused(false);
+            }
+            isEventPlaying = !isEventPlaying;
+        }
+    }
+
+    public void StopEvent()
+    {
+        if (isEventStarted)
+        {
+            eventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            eventInstance.release();
+            isEventStarted = false;
+        }
+    }
+
+    void Update()
+    {
+        if (isEventStarted && isEventPlaying)
+        {
+            elapsedTime += Time.deltaTime;
+        }
+    }
+
     void OnDestroy()
     {
-        // No need to destroy the emitter I guess?
+        if (isEventStarted)
+        {
+            eventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            eventInstance.release();
+        }
     }
 }

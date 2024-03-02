@@ -1,248 +1,118 @@
 using UnityEngine;
-using FMOD.Studio;
-using FMODUnity;
-
-using System.Collections;
-
 using System;
-
 using System.Linq;
-
-public class Note
-{
-    public string value;
-    public int measure;
-    public int beat;
-    public int subdivision;
-    public int length;
-
-    public float expectedAbsoluteTime;
-
-    public bool isPast = false;
-    public bool isHit = false;
-
-    public Note(string value, int measure, int beat, int subdivision, int length)
-    {
-        this.value = value;
-        this.measure = measure;
-        this.beat = beat;
-        this.subdivision = subdivision;
-        this.length = length;
-    }
-
-    public int CountSubdivisions(int SIGNATURE, int SUBDIVISIONS, int measure, int beat, int subdivision)
-    {
-        return (measure - 1) * SIGNATURE * SUBDIVISIONS + (beat - 1) * SUBDIVISIONS + (subdivision - 1);
-    }
-
-    public float UpdateExpectedAbsoluteTime(int SIGNATURE, float BEAT_DURATION, int SUBDIVISIONS, float currentTime, int measure, int beat, int subdivision)
-    {
-        int fromTotalSubdivisions = CountSubdivisions(SIGNATURE, SUBDIVISIONS, measure, beat, subdivision);
-        int thisTotalSubdivisions = CountSubdivisions(SIGNATURE, SUBDIVISIONS, this.measure, this.beat, this.subdivision);
-        int offsetSubdivisions = thisTotalSubdivisions - fromTotalSubdivisions;
-        float offset = offsetSubdivisions * (BEAT_DURATION / SUBDIVISIONS);
-        this.expectedAbsoluteTime = currentTime + offset;
-        // Debug.Log($"Note: {this.value}, Offset subdivisions: {offsetSubdivisions}, Time offset: {timeOffset}");
-
-        return this.expectedAbsoluteTime;
-    }
-}
+using System.Collections.Generic;
 
 public class ActManager : MonoBehaviour
 {
-    public Restart restart;
-    public StudioEventEmitter[] studioEventEmittersToPause;
-
-    private bool PLAY_TOGGLE = true;
-
-    private EventInstance pauseSnapshotInstance;
+    public bool isDebug;
+    public UnityEngine.UI.Text debugText;
 
     private Coroutine subdivisionCoroutine;
 
     private int SUBDIVISIONS = 8;
 
-    private float beatDuration = 60f / 115; // TODO: query BPM;
+    private List<NoteEvent> noteEvents;
 
-    private int signature = 4; // TODO: query signature;
+    public CentralAudioSource centralAudioSource;
+
 
     private bool isButtonDownAcrossUpdates = false;
-
-    private Note[] notes;
-
     private InstrumentControl instrumentControl;
+    private ScoreManager scoreManager;
+    private BeatTracker beatTracker;
+    public SceneData[] scenes;
+    public static ActManager Instance { get; private set; }
 
-    private (int measure, int beat, int subdivision, float time) currentBeatInfo;
+    public static event Action<float> OnElapsedTimeChanged;
+    public static event Action<List<NoteEvent>> OnMelodyReady;
+    public static event Action<int, int> OnBPMReady;
+    public static event Action<BeatTracker> OnBeatTrackerUpdate;
 
+    private SceneData currentSceneData;
+    public SceneData CurrentSceneData => currentSceneData;
 
-    public void OnPlayPause()
+    private float lastElapsedTimeValue;
+
+    // private IEnumerator SubdivisionRoutine(int measure, int beat)
+    // {
+    //     float subdivisionDuration = beatDuration / SUBDIVISIONS;
+    //     for (int i = 1; i <= SUBDIVISIONS; i++)
+    //     {
+    //         yield return new WaitForSeconds(subdivisionDuration);
+    //     }
+    // }
+
+    private void Awake()
     {
-        TogglePlayAct();
-    }
-
-    /** END OF PUBLIC METHODS */
-    private void CalculateNoteTimeOffsets(int measure, int beat)
-    {
-        float currentTime = Time.time;
-        foreach (Note note in notes)
+        if (Instance != null && Instance != this)
         {
-            note.UpdateExpectedAbsoluteTime(signature, beatDuration, SUBDIVISIONS, currentTime, measure, beat, 1);
+            Destroy(gameObject);
+            return;
         }
-    }
 
-    private IEnumerator SubdivisionRoutine(int measure, int beat)
-    {
-        float subdivisionDuration = beatDuration / SUBDIVISIONS;
-        for (int i = 1; i <= SUBDIVISIONS; i++)
-        {
-            currentBeatInfo = (measure, beat, i, Time.time);
-            yield return new WaitForSeconds(subdivisionDuration);
-        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Should I?
     }
-
     void Start()
     {
         instrumentControl = gameObject.AddComponent<InstrumentControl>();
-        instrumentControl.Initialize(studioEventEmittersToPause[0].EventInstance);
-
-        notes = new Note[18];
-        notes[0] = new Note("A", 1, 1, 1, 8);
-        notes[1] = new Note("A#", 1, 2, 1, 8);
-        notes[2] = new Note("B", 1, 3, 1, 8);
-        notes[3] = new Note("B#", 1, 4, 1, 8);
-        notes[4] = new Note("C", 2, 1, 1, 8);
-        notes[5] = new Note("C#", 2, 2, 1, 8);
-        notes[6] = new Note("D", 2, 3, 1, 8);
-        notes[7] = new Note("D#", 2, 4, 1, 8);
-        notes[8] = new Note("E", 3, 1, 1, 8);
-        notes[9] = new Note("A", 3, 2, 1, 8);
-        notes[10] = new Note("A#", 3, 3, 1, 8);
-        notes[11] = new Note("B", 3, 4, 1, 8);
-        notes[12] = new Note("B#", 4, 1, 1, 8);
-        notes[13] = new Note("C", 4, 2, 1, 8);
-        notes[14] = new Note("C#", 4, 3, 1, 8);
-        notes[15] = new Note("D", 4, 4, 1, 8);
-        notes[16] = new Note("D#", 5, 1, 1, 8);
-        notes[17] = new Note("E", 5, 2, 1, 8);
-
-        CalculateNoteTimeOffsets(1, 1);
+        scoreManager = gameObject.AddComponent<ScoreManager>();
+        if (centralAudioSource == null)
+        {
+            throw new Exception("Please add centralAudioSource to ActManager");
+        }
 
         CentralAudioSource.OnAudioBeat += OnAudioBeat;
-        Restart.OnRestartClicked += OnRestartClick;
 
-        pauseSnapshotInstance = RuntimeManager.CreateInstance("snapshot:/GamePause");
+        LoadScene(0);
     }
 
-    void OnDisable()
+    private void LoadScene(int index)
     {
-        CentralAudioSource.OnAudioBeat -= OnAudioBeat;
+        currentSceneData = scenes[index];
+        noteEvents = scoreManager.Initialize(currentSceneData.songDataName);
+        OnMelodyReady(noteEvents);
+
+        beatTracker = new BeatTracker(currentSceneData.bpm, currentSceneData.signature);
+        OnBPMReady(currentSceneData.bpm, currentSceneData.signature);
+
+        centralAudioSource.Play(currentSceneData.FMODEventName, currentSceneData.bpm, currentSceneData.signature);
+        instrumentControl.Initialize(centralAudioSource);
     }
 
-    private void TogglePlayAct()
+    private void OnAudioBeat(int FMODMeasure, int FMODBeat)
     {
-        PLAY_TOGGLE = !PLAY_TOGGLE;
-        if (PLAY_TOGGLE == false)
-        {
-            // Trigger FMOD GamePause Snapshot
-            pauseSnapshotInstance.start();
-            foreach (var emitter in studioEventEmittersToPause)
-            {
-                var instance = emitter.EventInstance;
-                // Pause all instances specified in component.
-                // This usually includes everything but Ambiance
-                instance.setPaused(true);
-            }
-        }
-        else
-        {
-            // Stop FMOD GamePause Snapshot
-            pauseSnapshotInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-            foreach (var emitter in studioEventEmittersToPause)
-            {
-                var instance = emitter.EventInstance;
-                // Play all instances
-                instance.setPaused(false);
-            }
-        }
+        beatTracker.OnBeatUpdate(FMODMeasure, FMODBeat, centralAudioSource.ElapsedTime);
+        OnBeatTrackerUpdate(beatTracker);
+        // if (subdivisionCoroutine != null)
+        // {
+        //     StopCoroutine(subdivisionCoroutine);
+        // }
+        // subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(FMODMeasure, FMODBeat));
     }
 
-    private void OnRestartClick()
-    {
-        foreach (var emitter in studioEventEmittersToPause)
-        {
-            var instance = emitter.EventInstance;
-            instance.setTimelinePosition(0);
-        }
-
-    }
-
-    private void OnAudioBeat(int FMODBeat, int FMODMeasure)
-    {
-        if (subdivisionCoroutine != null)
-        {
-            StopCoroutine(subdivisionCoroutine);
-        }
-
-        CalculateNoteTimeOffsets(FMODMeasure, FMODBeat);
-        subdivisionCoroutine = StartCoroutine(SubdivisionRoutine(FMODMeasure, FMODBeat));
-    }
-
-    private IEnumerator ADSRCoroutine(int direction)
-    {
-        float attackTime = 0.1f;
-        float startTime = Time.time;
-        while (Time.time - startTime < attackTime)
-        {
-            float normalizedTime;
-            if (direction > 0)
-            {
-                normalizedTime = (Time.time - startTime) / attackTime;
-            }
-            else
-            {
-                normalizedTime = 1 - ((Time.time - startTime) / attackTime);
-            }
-            studioEventEmittersToPause[0].EventInstance.setParameterByName("VolumeControl", normalizedTime);
-            yield return null;
-        }
-    }
-
-    private (Note closestNote, float timeDifference) FindClosestNote()
-    {
-        Note closestNote = null;
-        float currentTime = Time.time;
-        float smallestTimeDifference = float.MaxValue;
-
-        foreach (Note note in notes)
-        {
-            if (!note.isPast)
-            {
-                float timeDifference = note.expectedAbsoluteTime - currentTime;
-                if (Mathf.Abs(timeDifference) < Mathf.Abs(smallestTimeDifference))
-                {
-                    smallestTimeDifference = timeDifference;
-                    closestNote = note;
-                }
-            }
-        }
-        return (closestNote, smallestTimeDifference);
-    }
     private void HandleClickUpdate()
     {
         bool isButtonDown = Input.GetMouseButton(0);
         if (isButtonDown && !isButtonDownAcrossUpdates)
         {
-            Debug.Log("click!");
-            (Note closestNote, float timeDifference) = FindClosestNote();
+            NoteEvent closestNote = scoreManager.GetNextNote();
             if (closestNote != null)
             {
-
                 float toleranceWindow = 0.150f;
-                if (Math.Abs(timeDifference) < toleranceWindow)
-                {
-                    float subdivisionDuration = beatDuration / SUBDIVISIONS;
-                    float absNoteDuration = closestNote.length * subdivisionDuration;
+                float timeDifference = closestNote.timing - centralAudioSource.ElapsedTime;
 
-                    instrumentControl.QueueNote(absNoteDuration, timeDifference);
+                /**
+                    Use these to test instrument!
+                */
+                bool isVeryWellInTime = Math.Abs(timeDifference) < 0.1;
+                bool IsSlightlyOffBeatAfter = closestNote.timing < centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
+                bool IsSlightlyOffBeatBefore = closestNote.timing > centralAudioSource.ElapsedTime && Math.Abs(timeDifference) > 0.1 && Math.Abs(timeDifference) < toleranceWindow;
+                if (isVeryWellInTime && UnityEngine.Random.value < 0.5f)
+                {
+
+                    instrumentControl.Play(closestNote);
 
                     closestNote.isPast = true;
                     closestNote.isHit = true;
@@ -251,31 +121,66 @@ public class ActManager : MonoBehaviour
         }
         else if (!isButtonDown && isButtonDownAcrossUpdates)
         {
-            // StartCoroutine(ADSRCoroutine(0));
+
         }
         isButtonDownAcrossUpdates = isButtonDown;
     }
 
     private void UpdateNoteStatus()
     {
-        float currentTime = currentBeatInfo.time;
         float toleranceWindow = 0.150f; // Test this!
 
-        Note note = notes.FirstOrDefault(note => !note.isPast);
+        NoteEvent note = noteEvents.FirstOrDefault(note => !note.isPast);
         if (note == null)
         {
-            int notesSuccess = notes.Count(note => note.isHit);
+            int notesSuccess = noteEvents.Count(note => note.isHit);
         }
-        if (note != null && !note.isPast && currentTime > note.expectedAbsoluteTime + toleranceWindow)
+        if (note != null)
         {
-            note.isPast = true;
-            // Debug.Log($"Missed note {note.value}!");
+            float timeDifference = note.timing - centralAudioSource.ElapsedTime;
+            bool isVeryWellInTime = Math.Abs(timeDifference) < 0.1;
+            if (isVeryWellInTime && UnityEngine.Random.value < 0.01f)
+            {
+
+                instrumentControl.Play(note);
+
+                note.isPast = true;
+                note.isHit = true;
+            }
         }
+        // if (note != null && centralAudioSource.ElapsedTime > note.timing + toleranceWindow)
+        // {
+        //     note.isPast = true;
+        //     // Debug.Log($"Missed note {note.value}!");
+        // }
     }
 
     void Update()
     {
-        UpdateNoteStatus();
-        HandleClickUpdate();
+        OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
+        // if (isDebug)
+        // {
+        //     LogDebugInfo(centralAudioSource.ElapsedTime);
+        // }
+        // if (lastElapsedTimeValue != centralAudioSource.ElapsedTime)
+        // {
+        //     OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
+        //     lastElapsedTimeValue = centralAudioSource.ElapsedTime;
+        // }
+        // UpdateNoteStatus();
+        // HandleClickUpdate();
+    }
+
+    void LogDebugInfo(float time)
+    {
+        if (debugText != null)
+        {
+            debugText.text = time.ToString();
+        }
+    }
+
+    void OnDisable()
+    {
+        CentralAudioSource.OnAudioBeat -= OnAudioBeat;
     }
 }
