@@ -19,7 +19,6 @@ public class KnotEvent
 
 public class TempoKnotManager: MonoBehaviour
 {
-    public int[] beatNumbersToMarkTimeAt = { 1, 2, 3, 4 };
     private float _elapsedTime;
     private BeatTracker _beatTracker;
     private List<KnotEvent> _knotEvents = new List<KnotEvent>();
@@ -57,7 +56,7 @@ public class TempoKnotManager: MonoBehaviour
             }
         }
 
-        if (beatNumbersToMarkTimeAt.Contains(beatTracker.beat))
+        if (ActManager.Instance.CurrentSceneData.beatNumbersToMarkTimeAt.Contains(beatTracker.beat))
         {
             CreateKnot(beatTracker);
         }
@@ -68,29 +67,18 @@ public class TempoKnotManager: MonoBehaviour
 
     public void Update()
     {
-        if (_beatTracker == null)
+        if (_beatTracker == null || ActManager.Instance.CurrentSceneData == null)
         {
-            Debug.Log("_beatTracker not initialised.");
             return;
         }
-        if (ActManager.Instance.sceneData == null)
-        {
-            Debug.Log("ActManager.Instance.sceneData not initialised.");
-            return;
-        }
-
-        Debug.Log($"shared timeFactor {ActManager.Instance.sceneData.timeFactor}");
-
-        // No
-        float melodyMarkerPositionPercentage = 0.9f;
 
         List<KnotEvent> knotsToRemove = new List<KnotEvent>();
         foreach (KnotEvent knotEvent in _knotEvents)
         {
-            float timeSinceFallStarted = _elapsedTime - (knotEvent.timing - (ActManager.Instance.sceneData.timeFactor * _beatTracker.secondsPerBeat));
-            float timeProgressRatio = timeSinceFallStarted / (ActManager.Instance.sceneData.timeFactor * _beatTracker.secondsPerBeat);
+            float timeSinceFallStarted = _elapsedTime - (knotEvent.timing - (ActManager.Instance.CurrentSceneData.timeFactor * _beatTracker.secondsPerBeat));
+            float timeProgressRatio = timeSinceFallStarted / (ActManager.Instance.CurrentSceneData.timeFactor * _beatTracker.secondsPerBeat);
 
-            float ropePositionPercentage = Mathf.Clamp01(timeProgressRatio) * melodyMarkerPositionPercentage;
+            float ropePositionPercentage = Mathf.Clamp01(timeProgressRatio) * ActManager.Instance.CurrentSceneData.tempoMarkerPositionPercentage;
 
             if (timeProgressRatio >= 1)
             {
@@ -102,7 +90,7 @@ public class TempoKnotManager: MonoBehaviour
                 {
                     if (_ropes[i] != null)
                     {
-                        var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(_ropes[i], ropePositionPercentage, ActManager.Instance.sceneData.ropeDirection).Item2;
+                        var position = RopeHelpers.GetParticlePositionByRopeLengthPercentage(_ropes[i], ropePositionPercentage, ActManager.Instance.CurrentSceneData.ropeDirection).Item2;
                         knotEvent.Instances[i].transform.position = position;
                     }
                 }
@@ -119,8 +107,8 @@ public class TempoKnotManager: MonoBehaviour
         {
             instances[i] = Instantiate(knotPrefab, _ropes[i].transform.position, Quaternion.identity, _ropes[i].transform);
         }
-        float knotTiming = beatTracker.timing + (ActManager.Instance.sceneData.timeFactor * beatTracker.secondsPerBeat);
-        _knotEvents.Add(new KnotEvent(knotTiming, beatTracker.uniqueBeatNumber + ActManager.Instance.sceneData.timeFactor, instances));
+        float knotTiming = beatTracker.timing + (ActManager.Instance.CurrentSceneData.timeFactor * beatTracker.secondsPerBeat);
+        _knotEvents.Add(new KnotEvent(knotTiming, beatTracker.uniqueBeatNumber + ActManager.Instance.CurrentSceneData.timeFactor, instances));
     }
 
     private void ReleaseKnot(KnotEvent knotEvent)

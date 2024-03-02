@@ -8,6 +8,15 @@ public static class RopeHelpers
         Up,
         Down
     }
+
+    public static RopeDirection SwitchRopeDirection(RopeDirection ropeDirection)
+    {
+        if (ropeDirection == RopeDirection.Up)
+        {
+            return RopeDirection.Down;
+        }
+        return RopeDirection.Up;
+    }
     public static int GetElementIndexByRopeLengthPercentage(ObiRope rope, float percentage, RopeDirection direction)
     {
         if (direction == RopeDirection.Up)

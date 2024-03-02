@@ -1,11 +1,7 @@
 using UnityEngine;
-using FMOD.Studio;
-using FMODUnity;
-using System.Collections;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using FMOD;
 
 public class ActManager : MonoBehaviour
 {
@@ -16,10 +12,6 @@ public class ActManager : MonoBehaviour
 
     private int SUBDIVISIONS = 8;
 
-    private float beatDuration = 60f / 115; // TODO: query BPM;
-
-    private int signature = 4; // TODO: query signature;
-
     private List<NoteEvent> noteEvents;
 
     public CentralAudioSource centralAudioSource;
@@ -29,8 +21,6 @@ public class ActManager : MonoBehaviour
     private InstrumentControl instrumentControl;
     private ScoreManager scoreManager;
     private BeatTracker beatTracker;
-
-    public SceneData sceneData; // meh
     public SceneData[] scenes;
     public static ActManager Instance { get; private set; }
 
@@ -38,6 +28,11 @@ public class ActManager : MonoBehaviour
     public static event Action<List<NoteEvent>> OnMelodyReady;
     public static event Action<int, int> OnBPMReady;
     public static event Action<BeatTracker> OnBeatTrackerUpdate;
+
+    private SceneData currentSceneData;
+    public SceneData CurrentSceneData => currentSceneData;
+
+    private float lastElapsedTimeValue;
 
     // private IEnumerator SubdivisionRoutine(int measure, int beat)
     // {
@@ -75,14 +70,14 @@ public class ActManager : MonoBehaviour
 
     private void LoadScene(int index)
     {
-        sceneData = scenes[index];
-        noteEvents = scoreManager.Initialize(sceneData.songDataName);
+        currentSceneData = scenes[index];
+        noteEvents = scoreManager.Initialize(currentSceneData.songDataName);
         OnMelodyReady(noteEvents);
 
-        beatTracker = new BeatTracker(sceneData.bpm, sceneData.signature);
-        OnBPMReady(sceneData.bpm, sceneData.signature);
+        beatTracker = new BeatTracker(currentSceneData.bpm, currentSceneData.signature);
+        OnBPMReady(currentSceneData.bpm, currentSceneData.signature);
 
-        centralAudioSource.Play(sceneData.FMODEventName, sceneData.bpm, sceneData.signature);
+        centralAudioSource.Play(currentSceneData.FMODEventName, currentSceneData.bpm, currentSceneData.signature);
         instrumentControl.Initialize(centralAudioSource);
     }
 
@@ -162,11 +157,16 @@ public class ActManager : MonoBehaviour
 
     void Update()
     {
+        OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
         // if (isDebug)
         // {
         //     LogDebugInfo(centralAudioSource.ElapsedTime);
         // }
-        OnElapsedTimeChanged(centralAudioSource.ElapsedTime); // no
+        // if (lastElapsedTimeValue != centralAudioSource.ElapsedTime)
+        // {
+        //     OnElapsedTimeChanged(centralAudioSource.ElapsedTime);
+        //     lastElapsedTimeValue = centralAudioSource.ElapsedTime;
+        // }
         // UpdateNoteStatus();
         // HandleClickUpdate();
     }

@@ -85,6 +85,7 @@ public class CentralAudioSource : MonoBehaviour
         {
             if (isEventPlaying)
             {
+                Debug.Log("Pausing FMOD event");
                 eventInstance.setPaused(true);
             }
             else

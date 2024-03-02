@@ -12,5 +12,6 @@
 {cc1dd43c-467f-452c-af76-f3b7d6f44332} event:/MyInstrument
 {334eba84-f970-4c76-9407-5627f87eb809} event:/MyInstrument0
 {ba3335f1-8ed2-497d-a3ae-2cd27ce59df9} event:/MyInstrument1
+{ff99b0e9-bdcc-4f51-bd89-56ac4b9ae82d} event:/RopeDirectionSwitch
 {7eb6684f-5e0d-4c1c-aa1c-6ce98e0763dc} parameter:/VolumeControl
 {2910ad78-c6c1-4fd6-8a34-8484b059a27b} snapshot:/GamePause

@@ -8,7 +8,7 @@ public class SceneData : ScriptableObject
     public int signature;
     public RopeHelpers.RopeDirection ropeDirection;
     public float tempoMarkerPositionPercentage;
-    public int[] indexesToMarkTimeAt;
+    public int[] beatNumbersToMarkTimeAt = { 1, 2, 3, 4 };
     public string FMODEventName;
     public string songDataName;
 }

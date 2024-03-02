@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Act1Scene1
   m_EditorClassIdentifier: 
   timeFactor: 4
-  bpm: 115
+  bpm: 155
   signature: 4
-  ropeDirection: 0
+  ropeDirection: 1
   tempoMarkerPositionPercentage: 0.9
-  indexesToMarkTimeAt: 01000000020000000300000004000000
+  beatNumbersToMarkTimeAt: 01000000020000000300000004000000
   FMODEventName: event:/Act1
   songDataName: Song1
